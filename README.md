@@ -34,6 +34,12 @@ Intel Core i3 and had no performance issues.
 Currently, Linux only. Ubuntu 16.04 and 18.04 work fine and are tested to be compatible runtime
 environments with the platform independent builds created by the docker build containers.
 
+You can use [pumpos](https://dev.s-ul.eu/hackitup/pumpos) as a base and deploy the distribution
+packages to an empty and bootable installation.
+
+A solution ~~copy-pasted from pumpos~~ similar to pumpos will be worked on when the higher priority
+issues of this project are resolved.
+
 ## ddr-mame
 Refer to the [readme](ddr-mame/README.md).
 
@@ -41,4 +47,5 @@ Refer to the [readme](ddr-mame/README.md).
 Refer to the [readme](ddrio/README.md).
 
 ## License
-Source code license is the Unlicense; you are permitted to do with this as thou wilt. For details, please refer to the [LICENSE file](LICENSE) included with the source code.
+Source code license is the Unlicense; you are permitted to do with this as thou wilt. For details,
+please refer to the [LICENSE file](LICENSE) included with the source code.
