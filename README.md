@@ -46,6 +46,10 @@ Refer to the [readme](ddr-mame/README.md).
 ## DDRIO
 Refer to the [readme](ddrio/README.md).
 
+## Issue reporting
+Use the templates when opening issues or merge requests. They save time, avoid a lot of back and
+forth, and assist you in providing fundamental information we are always asking for.
+
 ## License
 Source code license is the Unlicense; you are permitted to do with this as thou wilt. For details,
 please refer to the [LICENSE file](LICENSE) included with the source code.
