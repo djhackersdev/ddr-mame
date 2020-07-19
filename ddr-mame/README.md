@@ -24,6 +24,46 @@ make build-docker
 
 The output from the build inside the docker container will be located in the `build/docker` folder.
 
+## Running
+The sub-folder `dist` contains various scripts and configuration files that allow you to handle
+various bootstrap tasks required to run MAME on a headless setup.
+
+The scripts were developed for running on a ITG dedicated cabinet with a 31kHz 640x480 resolution
+monitor. If you have a different monitor, you will likely have to tweak some properties. If you do
+so, extending them and keeping things flexible is the way to go and your contribution to extend
+support for different cabinet/setup types is highly appreciated.
+
+On a headless setup, unpack the distribution package to a folder of your choice. This should deploy
+all the files from `dist`, the `mamearcade64` executable and a bunch of folders MAME needs.
+
+Make sure to also deploy the ROM and CHD images of the games you want to deploy and put them into
+the `roms` folder.
+
+Run the following command to run MAME with default settings (in 640x480 resolution mode):
+```shell
+./cabinet-startx.sh
+```
+
+This will launch MAME and drop you in the main menu where you can select a game.
+
+There are bunch of environment variables to tweak the startup behavior of mame.
+
+This let's you choose a different resolution, if supported (currently 480 only):
+```shell
+DDR_MAME_RES_VERT=480 ./cabinet-startx.sh
+```
+
+The following command launches DDR Extreme (rom name `ddrextrm`) directly:
+```shell
+DDR_MAME_GAME=ddrextrm ./cabinet-startx.sh
+```
+
+If you are experiencing issues, you can easily enable verbose log output and make it pipe to a
+`mame.log` log file in the same directory:
+```shell
+DDR_MAME_MODE=debug ./cabinet-startx.sh
+```
+
 ## Features and changes
 * Remove emulator warning and game info OSD screens appearing every time you start a game
 * Native support for IO hardware implementation the DDRIO interface in the 
