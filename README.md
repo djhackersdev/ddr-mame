@@ -10,7 +10,8 @@ is still around, but is showing its age, it gets more difficult to acquire and i
 cabinet types that do not have the old style DDR cabinet wiring.
 
 The goal of this project is to provide a software solution and infrastructure to develop and
-maintain it for the purpose of running it on different hardware types with standard PC hardware.
+maintain it for the purpose of running it on different setups/cabinet types with standard PC
+hardware.
 
 ## Features
 * Based on [GroovyMAME](https://github.com/antonioginer/GroovyMAME) 0.222 stable and therefore
