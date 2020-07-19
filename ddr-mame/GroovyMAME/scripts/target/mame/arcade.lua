@@ -1,0 +1,895 @@
+-- license:BSD-3-Clause
+-- copyright-holders:MAMEdev Team
+
+---------------------------------------------------------------------------
+--
+--   mame.lua
+--
+--   MAME target makefile
+--
+---------------------------------------------------------------------------
+
+--------------------------------------------------
+-- specify available CPU cores
+---------------------------------------------------
+
+CPUS["Z80"] = null
+CPUS["Z180"] = null
+CPUS["I8085"] = null
+CPUS["I8089"] = null
+CPUS["M6502"] = null
+CPUS["H6280"] = null
+CPUS["I86"] = null
+CPUS["I386"] = null
+CPUS["NEC"] = null
+CPUS["V30MZ"] = null
+CPUS["V60"] = null
+CPUS["MCS48"] = null
+CPUS["MCS51"] = null
+CPUS["MCS96"] = null
+CPUS["M6800"] = null
+CPUS["M6805"] = null
+CPUS["HD6309"] = null
+CPUS["M6809"] = null
+CPUS["KONAMI"] = null
+CPUS["M680X0"] = null
+CPUS["T11"] = null
+CPUS["S2650"] = null
+CPUS["TMS340X0"] = null
+CPUS["TMS9900"] = null
+CPUS["TMS9995"] = null
+CPUS["TMS9900L"] = null
+CPUS["Z8000"] = null
+CPUS["Z8001"] = null
+CPUS["TMS32010"] = null
+CPUS["TMS32025"] = null
+CPUS["TMS32031"] = null
+CPUS["TMS32051"] = null
+CPUS["TMS32082"] = null
+CPUS["TMS57002"] = null
+CPUS["CCPU"] = null
+CPUS["ADSP21XX"] = null
+CPUS["ASAP"] = null
+CPUS["AM29000"] = null
+CPUS["UPD7810"] = null
+CPUS["ARM"] = null
+CPUS["ARM7"] = null
+CPUS["JAGUAR"] = null
+CPUS["CUBEQCPU"] = null
+CPUS["ESRIP"] = null
+CPUS["MIPS1"] = null
+CPUS["MIPS3"] = null
+CPUS["PSX"] = true
+CPUS["SH"] = null
+CPUS["DSP16"] = null
+CPUS["DSP32C"] = null
+CPUS["PIC16C5X"] = null
+CPUS["PIC16C62X"] = null
+CPUS["PIC17"] = null
+CPUS["G65816"] = null
+CPUS["SPC700"] = null
+CPUS["E1"] = null
+CPUS["I860"] = null
+CPUS["I960"] = null
+CPUS["H8"] = null
+CPUS["H8500"] = null
+CPUS["V810"] = null
+CPUS["M37710"] = null
+CPUS["POWERPC"] = null
+CPUS["SE3208"] = null
+CPUS["MC68HC11"] = null
+CPUS["ADSP21062"] = null
+CPUS["DSP56156"] = null
+CPUS["RSP"] = null
+CPUS["COP400"] = null
+CPUS["TLCS90"] = null
+CPUS["TLCS870"] = null
+CPUS["TLCS900"] = null
+CPUS["MB88XX"] = null
+CPUS["MB86233"] = null
+CPUS["MB86235"] = null
+CPUS["SSP1601"] = null
+CPUS["APEXC"] = null
+CPUS["CP1610"] = null
+CPUS["F8"] = null
+CPUS["LH5801"] = null
+CPUS["PDP1"] = null
+CPUS["SATURN"] = null
+CPUS["SC61860"] = null
+CPUS["LR35902"] = null
+CPUS["TMS7000"] = null
+CPUS["SM8500"] = null
+CPUS["MINX"] = null
+CPUS["SSEM"] = null
+CPUS["AVR8"] = null
+--CPUS["TMS1000"] = null
+CPUS["MCS40"] = null
+CPUS["SUPERFX"] = null
+CPUS["Z8"] = null
+CPUS["I8008"] = null
+CPUS["SCMP"] = null
+--CPUS["MN1880"] = null
+CPUS["MN10200"] = null
+CPUS["COSMAC"] = null
+CPUS["UNSP"] = null
+CPUS["HCD62121"] = null
+CPUS["PPS4"] = null
+CPUS["UPD7725"] = null
+CPUS["HD61700"] = null
+CPUS["LC8670"] = null
+CPUS["SCORE"] = null
+CPUS["ES5510"] = null
+CPUS["SCUDSP"] = null
+CPUS["IE15"] = null
+CPUS["8X300"] = null
+CPUS["ALTO2"] = null
+--CPUS["W65816"] = null
+CPUS["ARC"] = null
+CPUS["ARCOMPACT"] = null
+--CPUS["AMIS2000"] = null
+--CPUS["UCOM4"] = null
+CPUS["HMCS40"] = null
+--CPUS["E0C6200"] = null
+--CPUS["MELPS4"] = null
+--CPUS["HPHYBRID"] = null
+--CPUS["SM510"] = null
+CPUS["ST62XX"] = null
+CPUS["DSPP"] = null
+CPUS["HPC"] = null
+--CPUS["RII"] = null
+--CPUS["BCP"] = null
+--CPUS["CR16B"] = null
+CPUS["FR"] = true
+CPUS["UPD78K"] = null
+CPUS["KS0164"] = null
+
+--------------------------------------------------
+-- specify available sound cores
+--------------------------------------------------
+
+SOUNDS["SAMPLES"] = null
+SOUNDS["DAC"] = null
+SOUNDS["DMADAC"] = null
+SOUNDS["SPEAKER"] = null
+SOUNDS["BEEP"] = null
+SOUNDS["DISCRETE"] = null
+SOUNDS["AY8910"] = null
+SOUNDS["YM2151"] = null
+SOUNDS["YM2203"] = null
+SOUNDS["YM2413"] = null
+SOUNDS["YM2608"] = null
+SOUNDS["YM2610"] = null
+SOUNDS["YM2610B"] = null
+SOUNDS["YM2612"] = null
+SOUNDS["YM3438"] = null
+SOUNDS["YM3812"] = null
+SOUNDS["YM3526"] = null
+SOUNDS["Y8950"] = null
+SOUNDS["YMF262"] = null
+SOUNDS["YMF271"] = null
+SOUNDS["YMF278B"] = null
+SOUNDS["YMZ280B"] = null
+SOUNDS["SN76477"] = null
+SOUNDS["SN76496"] = null
+SOUNDS["POKEY"] = null
+SOUNDS["TIA"] = null
+SOUNDS["NES_APU"] = null
+SOUNDS["PAULA_8364"] = null
+SOUNDS["ASTROCADE"] = null
+SOUNDS["NAMCO"] = null
+SOUNDS["NAMCO_15XX"] = null
+SOUNDS["NAMCO_CUS30"] = null
+SOUNDS["NAMCO_52XX"] = null
+SOUNDS["NAMCO_63701X"] = null
+--SOUNDS["NAMCO_163"] = null
+SOUNDS["T6W28"] = null
+SOUNDS["SNKWAVE"] = null
+SOUNDS["C140"] = null
+SOUNDS["C352"] = null
+SOUNDS["TMS36XX"] = null
+SOUNDS["TMS3615"] = null
+SOUNDS["TMS5110"] = null
+SOUNDS["TMS5220"] = null
+SOUNDS["VLM5030"] = null
+SOUNDS["ADPCM"] = null
+SOUNDS["MSM5205"] = null
+SOUNDS["MSM5232"] = null
+SOUNDS["OKIM6258"] = null
+SOUNDS["OKIM6295"] = null
+SOUNDS["OKIM6376"] = null
+SOUNDS["OKIM9810"] = null
+--SOUNDS["UPD7752"] = null
+SOUNDS["UPD7759"] = null
+SOUNDS["HC55516"] = null
+SOUNDS["TC8830F"] = null
+SOUNDS["K005289"] = null
+SOUNDS["K007232"] = null
+SOUNDS["K051649"] = null
+SOUNDS["K053260"] = null
+SOUNDS["K054539"] = null
+SOUNDS["K056800"] = null
+SOUNDS["SEGAPCM"] = null
+SOUNDS["MULTIPCM"] = null
+SOUNDS["SCSP"] = null
+SOUNDS["AICA"] = null
+SOUNDS["RF5C68"] = null
+SOUNDS["RF5C400"] = null
+SOUNDS["CEM3394"] = null
+SOUNDS["QSOUND"] = null
+SOUNDS["QS1000"] = null
+SOUNDS["SAA1099"] = null
+SOUNDS["IREMGA20"] = null
+SOUNDS["ES5503"] = null
+SOUNDS["ES5505"] = null
+SOUNDS["ES5506"] = null
+SOUNDS["BSMT2000"] = null
+SOUNDS["GAELCO_CG1V"] = null
+SOUNDS["GAELCO_GAE1"] = null
+--SOUNDS["HUC6230"] = null
+SOUNDS["C6280"] = null
+SOUNDS["SP0250"] = null
+SOUNDS["SPU"] = true
+SOUNDS["CDDA"] = true
+SOUNDS["ICS2115"] = null
+SOUNDS["I5000_SND"] = null
+SOUNDS["ST0016"] = null
+SOUNDS["NILE"] = null
+SOUNDS["X1_010"] = null
+SOUNDS["VRENDER0"] = null
+SOUNDS["VOTRAX"] = null
+SOUNDS["ES8712"] = null
+SOUNDS["CDP1869"] = null
+SOUNDS["S14001A"] = null
+SOUNDS["WAVE"] = null
+SOUNDS["SID6581"] = null
+SOUNDS["SID8580"] = null
+SOUNDS["SP0256"] = null
+SOUNDS["DIGITALKER"] = null
+SOUNDS["CDP1863"] = null
+SOUNDS["CDP1864"] = null
+SOUNDS["ZSG2"] = null
+SOUNDS["MOS656X"] = null
+SOUNDS["ASC"] = null
+SOUNDS["MAS3507D"] = true
+SOUNDS["SOCRATES"] = null
+SOUNDS["TMC0285"] = null
+SOUNDS["TMS5200"] = null
+SOUNDS["CD2801"] = null
+SOUNDS["CD2802"] = null
+SOUNDS["M58817"] = null
+SOUNDS["TMC0281"] = null
+SOUNDS["TMS5100"] = null
+SOUNDS["TMS5110A"] = null
+SOUNDS["LMC1992"] = null
+SOUNDS["AWACS"] = null
+SOUNDS["YMZ770"] = null
+SOUNDS["MPEG_AUDIO"] = null
+SOUNDS["T6721A"] = null
+SOUNDS["MOS7360"] = null
+SOUNDS["ESQPUMP"] = null
+--SOUNDS["VRC6"] = null
+SOUNDS["SB0400"] = null
+SOUNDS["AC97"] = null
+SOUNDS["ES1373"] = null
+SOUNDS["L7A1045"] = null
+SOUNDS["AD1848"] = null
+--SOUNDS["UPD1771"] = null
+SOUNDS["VOLT_REG"] = null
+SOUNDS["MEA8000"] = null
+SOUNDS["DAC76"] = null
+SOUNDS["TA7630"] = null
+SOUNDS["MM5837"] = null
+--SOUNDS["DAVE"] = null
+SOUNDS["LC7535"] = null
+--SOUNDS["UPD934G"] = null
+SOUNDS["S_DSP"] = null
+SOUNDS["KS0164"] = null
+
+--------------------------------------------------
+-- specify available video cores
+--------------------------------------------------
+
+VIDEOS["SEGA315_5124"] = null
+VIDEOS["SEGA315_5313"] = null
+--VIDEOS["AM8052"] = null
+VIDEOS["BUFSPRITE"] = null
+VIDEOS["BT45X"] = null
+--VIDEOS["CDP1861"] = null
+--VIDEOS["CDP1862"] = null
+VIDEOS["CESBLIT"] = null
+--VIDEOS["CRT9007"] = null
+--VIDEOS["CRT9021"] = null
+--VIDEOS["CRT9028"] = null
+--VIDEOS["CRT9212"] = null
+VIDEOS["CRTC_EGA"] = null
+--VIDEOS["DL1416"] = null
+VIDEOS["DM9368"] = null
+VIDEOS["DP8350"] = null
+--VIDEOS["EF9340_1"] = null
+--VIDEOS["EF9345"] = null
+--VIDEOS["EF9364"] = null
+--VIDEOS["EF9365"] = null
+VIDEOS["EF9369"] = null
+--VIDEOS["GF4500"] = null
+VIDEOS["GF7600GS"] = null
+VIDEOS["EPIC12"] = null
+VIDEOS["FIXFREQ"] = null
+--VIDEOS["HD44102"] = null
+--VIDEOS["HD44352"] = null
+VIDEOS["HD44780"] = null
+--VIDEOS["HD61603"] = null
+VIDEOS["HD61830"] = null
+VIDEOS["HD63484"] = null
+--VIDEOS["HD66421"] = null
+--VIDEOS["HLCD0488"] = null
+--VIDEOS["HLCD0515"] = null
+--VIDEOS["HLCD0538"] = null
+VIDEOS["HUC6202"] = null
+VIDEOS["HUC6260"] = null
+--VIDEOS["HUC6261"] = null
+VIDEOS["HUC6270"] = null
+--VIDEOS["HUC6272"] = null
+VIDEOS["I4100"] = null
+--VIDEOS["I8244"] = null
+VIDEOS["I8275"] = null
+VIDEOS["JANGOU_BLITTER"] = null
+--VIDEOS["LC7582"] = null
+VIDEOS["M50458"] = null
+VIDEOS["MB90082"] = null
+VIDEOS["MB_VCU"] = null
+VIDEOS["MC6845"] = null
+--VIDEOS["MC6847"] = null
+--VIDEOS["MD4330B"] = null
+--VIDEOS["MM5445"] = null
+--VIDEOS["MSM6222B"] = null
+--VIDEOS["MSM6255"] = null
+--VIDEOS["MOS6566"] = null
+VIDEOS["PC_VGA"] = null
+--VIDEOS["PCF2100"] = null
+VIDEOS["POLY"] = null
+VIDEOS["PSX"] = true
+VIDEOS["RAMDAC"] = null
+--VIDEOS["S2636"] = null
+VIDEOS["SAA5050"] = null
+--VIDEOS["SDA5708"] = null
+VIDEOS["SCN2674"] = null
+VIDEOS["PWM_DISPLAY"] = null
+--VIDEOS["SED1200"] = null
+--VIDEOS["SED1330"] = null
+--VIDEOS["SED1500"] = null
+--VIDEOS["SED1520"] = null
+VIDEOS["SNES_PPU"] = null
+VIDEOS["STVVDP"] = null
+--VIDEOS["T6963C"] = null
+--VIDEOS["T6A04"] = null
+VIDEOS["TLC34076"] = null
+VIDEOS["TMS34061"] = null
+--VIDEOS["TMS3556"] = null
+VIDEOS["TMS9927"] = null
+VIDEOS["TMS9928A"] = null
+--VIDEOS["UPD3301"] = null
+VIDEOS["UPD7220"] = null
+--VIDEOS["UPD7227"] = null
+VIDEOS["V9938"] = null
+--VIDEOS["VIC4567"] = null
+VIDEOS["VOODOO"] = null
+VIDEOS["VOODOO_PCI"] = null
+VIDEOS["ZEUS2"] = null
+VIDEOS["PPU2C0X"] = null
+VIDEOS["PS2GS"] = null
+VIDEOS["PS2GIF"] = null
+VIDEOS["VRENDER0"] = null
+
+--------------------------------------------------
+-- specify available machine cores
+--------------------------------------------------
+
+MACHINES["ACORN_VIDC"] = null
+MACHINES["AKIKO"] = null
+--MACHINES["AM2901B"] = null
+MACHINES["ARM_IOMD"] = null
+MACHINES["AUTOCONFIG"] = null
+MACHINES["BUSMOUSE"] = null
+MACHINES["CR511B"] = null
+MACHINES["DMAC"] = null
+MACHINES["GAYLE"] = null
+MACHINES["NCR53C7XX"] = null
+MACHINES["LSI53C810"] = null
+MACHINES["2812FIFO"] = null
+MACHINES["6522VIA"] = null
+MACHINES["TPI6525"] = null
+MACHINES["RIOT6532"] = null
+MACHINES["6821PIA"] = null
+MACHINES["6840PTM"] = null
+--MACHINES["MPCC68561"] = null
+MACHINES["ACIA6850"] = null
+MACHINES["68681"] = null
+MACHINES["7200FIFO"] = null
+--MACHINES["8530SCC"] = null
+--MACHINES["TTL7400"] = null
+--MACHINES["TTL7404"] = null
+MACHINES["TTL74123"] = null
+MACHINES["TTL74145"] = null
+MACHINES["TTL74148"] = null
+MACHINES["TTL74153"] = null
+MACHINES["TTL74157"] = null
+--MACHINES["TTL74161"] = null
+--MACHINES["TTL74164"] = null
+MACHINES["TTL74165"] = null
+MACHINES["TTL74166"] = null
+--MACHINES["TTL74175"] = null
+MACHINES["TTL74181"] = null
+MACHINES["TTL74259"] = null
+--MACHINES["TTL74381"] = null
+MACHINES["TTL7474"] = null
+MACHINES["KBDC8042"] = null
+MACHINES["I8257"] = null
+MACHINES["AAKARTDEV"] = null
+--MACHINES["ACIA6850"] = null
+MACHINES["ADC0804"] = null
+MACHINES["ADC0808"] = null
+MACHINES["ADC083X"] = true
+MACHINES["ADC1038"] = null
+MACHINES["ADC1213X"] = null
+MACHINES["AICARTC"] = null
+--MACHINES["AM25S55X"] = null
+--MACHINES["AM2847"] = null
+--MACHINES["AM2910"] = null
+MACHINES["AM53CF96"] = null
+MACHINES["AM79C90"] = null
+--MACHINES["AM9513"] = null
+MACHINES["AM9517A"] = null
+MACHINES["AMIGAFDC"] = null
+MACHINES["AT_KEYBC"] = null
+MACHINES["AT28C16"] = null
+MACHINES["AT29X"] = null
+MACHINES["AT45DBXX"] = null
+MACHINES["ATAFLASH"] = null
+MACHINES["ARM_AIC"] = null
+MACHINES["AY31015"] = null
+MACHINES["BANKDEV"] = true
+--MACHINES["BIM68153"] = null
+MACHINES["CDP1852"] = null
+MACHINES["CDP1871"] = null
+MACHINES["CHESSMACHINE"] = null
+MACHINES["CMOS40105"] = null
+MACHINES["CDU76S"] = null
+MACHINES["COM8116"] = null
+MACHINES["CR589"] = null
+--MACHINES["CS4031"] = null
+--MACHINES["CS8221"] = null
+MACHINES["CXD1095"] = null
+MACHINES["DP8390"] = null
+--MACHINES["DP8573"] = null
+MACHINES["DS1204"] = null
+MACHINES["DS1205"] = null
+MACHINES["DS1302"] = null
+--MACHINES["DS1315"] = null
+MACHINES["DS1386"] = null
+MACHINES["DS17X85"] = null
+MACHINES["DS1994"] = null
+MACHINES["DS2401"] = true
+MACHINES["DS2404"] = null
+MACHINES["DS75160A"] = null
+MACHINES["DS75161A"] = null
+MACHINES["E0516"] = null
+MACHINES["E05A03"] = null
+MACHINES["E05A30"] = null
+MACHINES["EEPROMDEV"] = null
+--MACHINES["ER1400"] = null
+MACHINES["ER2055"] = null
+MACHINES["F3853"] = null
+--MACHINES["HD63450"] = null
+--MACHINES["HD64610"] = null
+MACHINES["I2CMEM"] = null
+--MACHINES["I80130"] = null
+--MACHINES["I8089"] = null
+MACHINES["I8155"] = null
+MACHINES["I8212"] = null
+MACHINES["I8214"] = null
+MACHINES["I82355"] = null
+MACHINES["I8243"] = null
+MACHINES["I8251"] = null
+MACHINES["I8255"] = null
+--MACHINES["I8257"] = null
+--MACHINES["I8271"] = null
+MACHINES["I8279"] = null
+MACHINES["I8355"] = null
+MACHINES["IDECTRL"] = null
+MACHINES["IE15"] = null
+MACHINES["IM6402"] = null
+MACHINES["INS8154"] = null
+MACHINES["INS8250"] = null
+MACHINES["INTELFLASH"] = true
+MACHINES["JVS"] = null
+MACHINES["K033906"] = null
+MACHINES["K053252"] = null
+MACHINES["K056230"] = null
+--MACHINES["KB3600"] = null
+--MACHINES["KBDC8042"] = null
+--MACHINES["KR2376"] = null
+MACHINES["LATCH8"] = null
+MACHINES["LC89510"] = null
+MACHINES["LDPR8210"] = null
+MACHINES["LDSTUB"] = null
+MACHINES["LDV1000"] = null
+MACHINES["LDP1000"] = null
+MACHINES["LDP1450"] = null
+MACHINES["LDVP931"] = null
+--MACHINES["LH5810"] = null
+MACHINES["LINFLASH"] = true
+MACHINES["LPCI"] = null
+--MACHINES["LSI53C810"] = null
+--MACHINES["M3002"] = null
+--MACHINES["M68307"] = null
+--MACHINES["M68340"] = null
+MACHINES["M6M80011AP"] = null
+MACHINES["MB14241"] = null
+MACHINES["MB3773"] = null
+MACHINES["MB8421"] = null
+MACHINES["MB87078"] = null
+--MACHINES["MB8795"] = null
+MACHINES["MB89352"] = null
+MACHINES["MB89371"] = true
+MACHINES["MB89374"] = null
+--MACHINES["MC14411"] = null
+MACHINES["MC146818"] = null
+MACHINES["MC6843"] = null
+MACHINES["MC6846"] = null
+MACHINES["MC6852"] = null
+MACHINES["MC6854"] = null
+--MACHINES["MC68328"] = null
+MACHINES["MC68901"] = null
+MACHINES["MCCS1850"] = null
+MACHINES["M68307"] = null
+MACHINES["M68340"] = null
+MACHINES["MCF5206E"] = null
+MACHINES["METERS"] = null
+MACHINES["MICROTOUCH"] = null
+--MACHINES["MIOT6530"] = null
+--MACHINES["MM5307"] = null
+--MACHINES["MM58167"] = null
+MACHINES["MM58274C"] = null
+MACHINES["MM74C922"] = null
+MACHINES["MOS6526"] = null
+MACHINES["MOS6529"] = null
+MACHINES["MIOT6530"] = null
+MACHINES["MOS6551"] = null
+--MACHINES["MOS6702"] = null
+--MACHINES["MOS8706"] = null
+--MACHINES["MOS8722"] = null
+--MACHINES["MOS8726"] = null
+MACHINES["MPU401"] = null
+MACHINES["MSM5832"] = null
+MACHINES["MSM58321"] = null
+MACHINES["MSM6242"] = null
+MACHINES["MSM6253"] = null
+--MACHINES["NCR5380"] = null
+MACHINES["NCR5380N"] = null
+MACHINES["NCR5390"] = null
+MACHINES["NCR539x"] = null
+MACHINES["NETLIST"] = null
+--MACHINES["NCR53C7XX"] = null
+MACHINES["NMC9306"] = null
+--MACHINES["NSC810"] = null
+MACHINES["NSCSI"] = null
+MACHINES["OUTPUT_LATCH"] = null
+MACHINES["PC_FDC"] = null
+MACHINES["PC_LPT"] = null
+--MACHINES["PCCARD"] = null
+MACHINES["PCF8583"] = null
+MACHINES["PCF8584"] = null
+MACHINES["PCF8593"] = null
+MACHINES["PCI"] = null
+MACHINES["PCKEYBRD"] = null
+MACHINES["PIC8259"] = null
+MACHINES["PIT68230"] = null
+MACHINES["PIT8253"] = null
+MACHINES["PLA"] = null
+--MACHINES["PROFILE"] = null
+--MACHINES["PROM82S129"] = null
+MACHINES["PXA255"] = null
+MACHINES["R10696"] = null
+MACHINES["R10788"] = null
+MACHINES["RA17XX"] = null
+--MACHINES["R64H156"] = null
+MACHINES["RF5C296"] = null
+--MACHINES["RIOT6532"] = null
+MACHINES["RIPPLE_COUNTER"] = null
+MACHINES["ROC10937"] = null
+MACHINES["RP5C01"] = null
+MACHINES["RP5C15"] = null
+MACHINES["RP5H01"] = null
+MACHINES["RSTBUF"] = null
+MACHINES["RTC4543"] = null
+MACHINES["RTC65271"] = null
+MACHINES["RTC9701"] = null
+MACHINES["S_SMP"] = null
+MACHINES["S2636"] = null
+MACHINES["S3520CF"] = null
+MACHINES["S3C24XX"] = null
+--MACHINES["S3C44B0"] = null
+MACHINES["SATURN"] = null
+MACHINES["SCC68070"] = null
+MACHINES["SCN_PCI"] = null
+MACHINES["SCSI"] = null
+MACHINES["SCUDSP"] = null
+MACHINES["SDA2006"] = null
+--MACHINES["SECFLASH"] = null
+--MACHINES["SENSORBOARD"] = null
+MACHINES["SERFLASH"] = null
+MACHINES["SMC91C9X"] = null
+MACHINES["SEGA_SCU"] = null
+MACHINES["SMPC"] = null
+--MACHINES["SPG2XX"] = null
+MACHINES["STVCD"] = null
+--MACHINES["SUN4C_MMU"] = null
+MACHINES["SWTPC8212"] = null
+MACHINES["TC0091LVC"] = null
+--MACHINES["TDC1008"] = null
+MACHINES["TE7750"] = null
+MACHINES["TICKET"] = null
+MACHINES["TIMEKPR"] = true
+--MACHINES["TMC208K"] = null
+MACHINES["TMP68301"] = null
+--MACHINES["TMS5501"] = null
+MACHINES["TMS6100"] = null
+MACHINES["TMS9901"] = null
+MACHINES["TMS9902"] = null
+--MACHINES["TPI6525"] = null
+--MACHINES["TTL74123"] = null
+--MACHINES["TTL74145"] = null
+--MACHINES["TTL74148"] = null
+--MACHINES["TTL74153"] = null
+--MACHINES["TTL74181"] = null
+--MACHINES["TTL7474"] = null
+MACHINES["UPD1990A"] = null
+MACHINES["UPD4992"] = null
+MACHINES["UPD4701"] = true
+MACHINES["UPD7001"] = null
+MACHINES["UPD7002"] = null
+MACHINES["UPD7004"] = null
+MACHINES["UPD71071"] = null
+MACHINES["UPD765"] = null
+MACHINES["FDC_PLL"] = null
+MACHINES["V3021"] = null
+MACHINES["WD_FDC"] = null
+--MACHINES["WD1010"] = null
+MACHINES["WD11C00_17"] = null
+MACHINES["WD2010"] = null
+MACHINES["WD33C9X"] = null
+MACHINES["X2212"] = null
+MACHINES["X76F041"] = true
+MACHINES["X76F100"] = true
+MACHINES["Z80CTC"] = null
+MACHINES["Z80SIO"] = null
+MACHINES["Z80SCC"] = null
+MACHINES["Z80DMA"] = null
+MACHINES["Z80PIO"] = null
+MACHINES["Z80STI"] = null
+MACHINES["Z8536"] = null
+MACHINES["SECFLASH"] = null
+MACHINES["PCCARD"] = true
+MACHINES["FDC37C665GT"] = null
+--MACHINES["SMC92X4"] = null
+--MACHINES["TI99_HD"] = null
+--MACHINES["STRATA"] = null
+MACHINES["STEPPERS"] = null
+--MACHINES["CORVUSHD"] = null
+--MACHINES["WOZFDC"] = null
+--MACHINES["APPLE_FDINTF"] = null
+--MACHINES["IWM"] = null
+--MACHINES["SWIM1"] = null
+--MACHINES["SWIM2"] = null
+--MACHINES["SWIM3"] = null
+--MACHINES["DIABLO_HD"] = null
+MACHINES["PCI9050"] = null
+MACHINES["TMS1024"] = null
+MACHINES["GENPC"] = null
+MACHINES["GEN_LATCH"] = null
+MACHINES["WATCHDOG"] = null
+MACHINES["SMARTMEDIA"] = null
+MACHINES["I82586"] = null
+MACHINES["INPUT_MERGER"] = null
+MACHINES["K054321"] = null
+MACHINES["ADC0844"] = null
+MACHINES["GEN_FIFO"] = null
+MACHINES["Z80DAISY"] = null
+--MACHINES["PS2DMAC"] = null
+MACHINES["PS2INTC"] = null
+--MACHINES["PS2MC"] = null
+--MACHINES["PS2PAD"] = null
+--MACHINES["PS2SIF"] = null
+--MACHINES["PS2TIMER"] = null
+--MACHINES["IOPCDVD"] = null
+--MACHINES["IOPDMA"] = null
+--MACHINES["IOPINTC"] = null
+--MACHINES["IOPSIO2"] = null
+--MACHINES["IOPTIMER"] = null
+MACHINES["AIC565"] = null
+MACHINES["AIC580"] = null
+MACHINES["AIC6250"] = null
+MACHINES["VRENDER0"] = null
+
+--------------------------------------------------
+-- specify available bus cores
+--------------------------------------------------
+
+--BUSES["A1BUS"] = null
+--BUSES["A2BUS"] = null
+--BUSES["A7800"] = null
+--BUSES["A800"] = null
+--BUSES["ABCBUS"] = null
+--BUSES["ABCKB"] = null
+--BUSES["ADAM"] = null
+--BUSES["ADAMNET"] = null
+--BUSES["APF"] = null
+BUSES["AMIGA_KEYBOARD"] = null
+--BUSES["ARCADIA"] = null
+--BUSES["ASTROCADE"] = null
+BUSES["ATA"] = true
+--BUSES["BML3"] = null
+--BUSES["BW2"] = null
+--BUSES["C64"] = null
+--BUSES["CBM2"] = null
+--BUSES["CBMIEC"] = null
+BUSES["CENTRONICS"] = null
+--BUSES["CHANNELF"] = null
+--BUSES["COCO"] = null
+--BUSES["COLECO_CONTROLLER"] = null
+--BUSES["COLECO_CART"] = null
+--BUSES["COMPUCOLOR"] = null
+--BUSES["COMX35"] = null
+--BUSES["CPC"] = null
+--BUSES["CRVISION"] = null
+--BUSES["DMV"] = null
+--BUSES["ECBBUS"] = null
+--BUSES["ECONET"] = null
+--BUSES["EP64"] = null
+--BUSES["EPSON_SIO"] = null
+--BUSES["GAMEBOY"] = null
+BUSES["GAMEGEAR"] = null
+--BUSES["GBA"] = null
+BUSES["GENERIC"] = null
+--BUSES["IEEE488"] = null
+--BUSES["IMI7000"] = null
+--BUSES["INTV"] = null
+--BUSES["IQ151"] = null
+BUSES["ISA"] = null
+--BUSES["ISBX"] = null
+--BUSES["KC"] = null
+--BUSES["LPCI"] = null
+--BUSES["MACPDS"] = null
+BUSES["MIDI"] = null
+--BUSES["MEGADRIVE"] = null
+--BUSES["MSX_SLOT"] = null
+BUSES["NEOGEO"] = null
+BUSES["NEOGEO_CTRL"] = null
+--BUSES["NES"] = null
+BUSES["NSCSI"] = null
+--BUSES["NUBUS"] = null
+--BUSES["O2"] = null
+--BUSES["ORICEXT"] = null
+--BUSES["PCE"] = null
+BUSES["PC_JOY"] = null
+BUSES["PC_KBD"] = null
+--BUSES["PET"] = null
+--BUSES["PLUS4"] = null
+--BUSES["PSX_CONTROLLER"] = null
+--BUSES["QL"] = null
+BUSES["RS232"] = null
+--BUSES["S100"] = null
+BUSES["SAT_CTRL"] = null
+--BUSES["SATURN"] = null
+BUSES["SCSI"] = null
+--BUSES["SCV"] = null
+BUSES["SEGA8"] = null
+BUSES["SG1000_EXP"] = null
+BUSES["SGIKBD"] = null
+BUSES["SMS_CTRL"] = null
+BUSES["SMS_EXP"] = null
+--BUSES["SNES"] = null
+--BUSES["SPC1000"] = null
+BUSES["SUNKBD"] = null
+--BUSES["TI99PEB"] = null
+--BUSES["TVC"] = null
+--BUSES["VBOY"] = null
+--BUSES["VC4000"] = null
+--BUSES["VCS"] = null
+--BUSES["VCS_CTRL"] = null
+BUSES["VECTREX"] = null
+--BUSES["VIC10"] = null
+--BUSES["VIC20"] = null
+--BUSES["VIDBRAIN"] = null
+--BUSES["VIP"] = null
+--BUSES["VME"] = null
+--BUSES["VSMILE"] = null
+--BUSES["VTECH_IOEXP"] = null
+--BUSES["VTECH_MEMEXP"] = null
+--BUSES["WANGPC"] = null
+--BUSES["WSWAN"] = null
+--BUSES["X68K"] = null
+--BUSES["Z88"] = null
+BUSES["ZORRO"] = null
+
+
+--------------------------------------------------
+-- specify used file formats
+--------------------------------------------------
+
+FORMATS["GUAB_DSK"] = null
+FORMATS["AMI_DSK"] = null
+FORMATS["SC3000_BIT"] = null
+FORMATS["WD177X_DSK"] = null
+FORMATS["NASLITE_DSK"] = null
+FORMATS["UPD765_DSK"] = null
+FORMATS["PC_DSK"] = null
+FORMATS["BASICDSK"] = null
+FORMATS["IBMXDF_DSK"] = null
+
+--------------------------------------------------
+-- this is the list of driver libraries that
+-- comprise MAME plus mamedriv.o which contains
+-- the list of drivers
+--------------------------------------------------
+
+function linkProjects_mame_arcade(_target, _subtarget)
+	links {
+		"konami",
+	}
+end
+
+function createMAMEProjects(_target, _subtarget, _name)
+	project (_name)
+	targetsubdir(_target .."_" .. _subtarget)
+	kind (LIBTYPE)
+	uuid (os.uuid("drv-" .. _target .."_" .. _subtarget .. "_" .._name))
+	addprojectflags()
+	precompiledheaders_novs()
+
+	includedirs {
+		MAME_DIR .. "src/osd",
+		MAME_DIR .. "src/emu",
+		MAME_DIR .. "src/devices",
+		MAME_DIR .. "src/mame",
+		MAME_DIR .. "src/lib",
+		MAME_DIR .. "src/lib/util",
+		MAME_DIR .. "src/lib/netlist",
+		MAME_DIR .. "3rdparty",
+		GEN_DIR  .. "mame/layout",
+	}
+	includedirs {
+		ext_includedir("flac"),
+		ext_includedir("glm"),
+		ext_includedir("jpeg"),
+		ext_includedir("rapidjson"),
+	}
+
+end
+
+function createProjects_mame_arcade(_target, _subtarget)
+--------------------------------------------------
+-- the following files are general components and
+-- shared across a number of drivers
+--------------------------------------------------
+
+createMAMEProjects(_target, _subtarget, "konami")
+files {
+	MAME_DIR .. "src/mame/drivers/ddrio-api.cpp",
+	MAME_DIR .. "src/mame/drivers/ksys573.cpp",
+	MAME_DIR .. "src/mame/machine/k573cass.cpp",
+	MAME_DIR .. "src/mame/machine/k573cass.h",
+	MAME_DIR .. "src/mame/machine/k573dio.cpp",
+	MAME_DIR .. "src/mame/machine/k573dio.h",
+	MAME_DIR .. "src/mame/machine/k573fpga.cpp",
+	MAME_DIR .. "src/mame/machine/k573fpga.h",
+	MAME_DIR .. "src/mame/machine/k573mcr.cpp",
+	MAME_DIR .. "src/mame/machine/k573mcr.h",
+	MAME_DIR .. "src/mame/machine/k573msu.cpp",
+	MAME_DIR .. "src/mame/machine/k573msu.h",
+	MAME_DIR .. "src/mame/machine/k573npu.cpp",
+	MAME_DIR .. "src/mame/machine/k573npu.h",
+	MAME_DIR .. "src/mame/machine/zs01.cpp",
+	MAME_DIR .. "src/mame/machine/zs01.h",
+}
+end

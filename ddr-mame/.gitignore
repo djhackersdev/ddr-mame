@@ -1,0 +1,9 @@
+build
+# Imported copy, import triggered by Makefile
+ddrio
+GroovyMAME/build
+GroovyMAME/history
+GroovyMAME/mame.ini
+GroovyMAME/mamearcade64
+GroovyMAME/save
+GroovyMAME/ui.ini
