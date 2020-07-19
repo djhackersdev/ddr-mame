@@ -6,8 +6,8 @@ want to mimic the arcade expierence as good as possible.
 ## Why?
 The emulation support for Konami's System 573 (Digital) hardware has reached important milestones
 making it a viable solution to play the old DDR games on standard PC hardware. The original hardware
-is still around, but is showing it's age, it gets more and more difficult to acquire them and it is
-not suited for cabinet types that do not have the old style DDR cabinet wiring.
+is still around, but is showing its age, it gets more difficult to acquire and is not suited for
+cabinet types that do not have the old style DDR cabinet wiring.
 
 The goal of this project is to provide a software solution and infrastructure to develop and
 maintain it for the purpose of running it on different hardware types with standard PC hardware.
