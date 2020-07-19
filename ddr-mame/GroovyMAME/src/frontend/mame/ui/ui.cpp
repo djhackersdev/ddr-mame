@@ -320,6 +320,8 @@ void mame_ui_manager::display_startup_screens(bool first_time)
 	show_gameinfo = show_warnings = false;
 #endif
 
+	show_gameinfo = show_warnings = false;
+
 	// loop over states
 	using namespace std::placeholders;
 	set_handler(ui_callback_type::GENERAL, std::bind(&mame_ui_manager::handler_ingame, this, _1));
