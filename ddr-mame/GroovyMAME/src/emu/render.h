@@ -452,6 +452,7 @@ public:
 		float               m_yscale;           // vertical scale factor
 		float               m_xoffset;          // horizontal offset
 		float               m_yoffset;          // vertical offset
+		float               m_aoffset;          // global offset TO FIX OFFSET
 	};
 
 	// getters

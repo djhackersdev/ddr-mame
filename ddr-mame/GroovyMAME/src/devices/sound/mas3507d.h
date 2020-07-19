@@ -22,7 +22,7 @@ public:
 	void i2c_scl_w(bool line);
 	void i2c_sda_w(bool line);
 
-	u32 get_frame_count() const { return total_frame_count - buffered_frame_count; }
+	u32 get_frame_count();
 
 protected:
 	virtual void device_start() override;

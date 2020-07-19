@@ -76,6 +76,8 @@ enum
 	SLIDER_ID_XOFFSET_LAST          = SLIDER_ID_XOFFSET + SLIDER_SCREEN_SPACING,
 	SLIDER_ID_YOFFSET,
 	SLIDER_ID_YOFFSET_LAST          = SLIDER_ID_YOFFSET + SLIDER_SCREEN_SPACING,
+	SLIDER_ID_AOFFSET,																		//to Offset Fix
+	SLIDER_ID_AOFFSET_LAST          = SLIDER_ID_AOFFSET + SLIDER_SCREEN_SPACING,			//to Offset Fix
 	SLIDER_ID_OVERLAY_XSCALE,
 	SLIDER_ID_OVERLAY_XSCALE_LAST   = SLIDER_ID_OVERLAY_XSCALE + SLIDER_SCREEN_SPACING,
 	SLIDER_ID_OVERLAY_YSCALE,
@@ -84,6 +86,8 @@ enum
 	SLIDER_ID_OVERLAY_XOFFSET_LAST  = SLIDER_ID_OVERLAY_XOFFSET + SLIDER_SCREEN_SPACING,
 	SLIDER_ID_OVERLAY_YOFFSET,
 	SLIDER_ID_OVERLAY_YOFFSET_LAST  = SLIDER_ID_OVERLAY_YOFFSET + SLIDER_SCREEN_SPACING,
+	SLIDER_ID_OVERLAY_AOFFSET,																//to Offset Fix	
+	SLIDER_ID_OVERLAY_AOFFSET_LAST  = SLIDER_ID_OVERLAY_AOFFSET + SLIDER_SCREEN_SPACING,	//to Offset Fix
 	SLIDER_ID_FLICKER,
 	SLIDER_ID_FLICKER_LAST          = SLIDER_ID_FLICKER + SLIDER_SCREEN_SPACING,
 	SLIDER_ID_BEAM_WIDTH_MIN,
@@ -318,10 +322,13 @@ private:
 	int32_t slider_yscale(running_machine &machine, void *arg, int id, std::string *str, int32_t newval);
 	int32_t slider_xoffset(running_machine &machine, void *arg, int id, std::string *str, int32_t newval);
 	int32_t slider_yoffset(running_machine &machine, void *arg, int id, std::string *str, int32_t newval);
+	float slider_aoffset(running_machine &machine, void *arg, int id, std::string *str, int32_t newval);//to Fix Offset
 	int32_t slider_overxscale(running_machine &machine, void *arg, int id, std::string *str, int32_t newval);
 	int32_t slider_overyscale(running_machine &machine, void *arg, int id, std::string *str, int32_t newval);
 	int32_t slider_overxoffset(running_machine &machine, void *arg, int id, std::string *str, int32_t newval);
 	int32_t slider_overyoffset(running_machine &machine, void *arg, int id, std::string *str, int32_t newval);
+	float slider_overaoffset(running_machine &machine, void *arg, int id, std::string *str, int32_t newval);//to Fix Offset
+	float get_offset();//to Fix Offset
 	int32_t slider_flicker(running_machine &machine, void *arg, int id, std::string *str, int32_t newval);
 	int32_t slider_beam_width_min(running_machine &machine, void *arg, int id, std::string *str, int32_t newval);
 	int32_t slider_beam_width_max(running_machine &machine, void *arg, int id, std::string *str, int32_t newval);

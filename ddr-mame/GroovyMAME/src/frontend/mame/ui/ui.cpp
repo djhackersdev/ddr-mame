@@ -31,6 +31,8 @@
 #include "ui/viewgfx.h"
 #include "imagedev/cassette.h"
 #include "../osd/modules/lib/osdobj_common.h"
+
+#include "../../../devices/sound/mas3507d.h"
 #include "config.h"
 
 
@@ -107,6 +109,8 @@ rgb_t mame_ui_manager::messagebox_backcolor;
 std::vector<ui::menu_item> mame_ui_manager::slider_list;
 slider_state *mame_ui_manager::slider_current;
 
+//To fix offset
+float global;
 
 /***************************************************************************
     CORE IMPLEMENTATION
@@ -1409,6 +1413,7 @@ std::vector<ui::menu_item> mame_ui_manager::slider_init(running_machine &machine
 	// add screen parameters
 	screen_device_iterator scriter(machine.root_device());
 	slider_index = 0;
+	int defaoffset = 0; //to Fix Offset
 	for (screen_device &screen : scriter)
 	{
 		int defxscale = floor(screen.xscale() * 1000.0f + 0.5f);
@@ -1442,6 +1447,9 @@ std::vector<ui::menu_item> mame_ui_manager::slider_init(running_machine &machine
 		m_sliders.push_back(slider_alloc(SLIDER_ID_YSCALE + slider_index, str.c_str(), 500, defyscale, 1500, 2, param));
 		str = string_format(_("%1$s Vert Position"), screen_desc);
 		m_sliders.push_back(slider_alloc(SLIDER_ID_YOFFSET + slider_index, str.c_str(), -500, defyoffset, 500, 2, param));
+		str = string_format(_("OFFSET FIX"));//to Fix Offset
+		defaoffset = 0;
+		m_sliders.push_back(slider_alloc(SLIDER_ID_AOFFSET + slider_index, str.c_str(), -500, defaoffset, 500, 2, param));//to Fix Offset
 		slider_index++;
 	}
 
@@ -1467,6 +1475,8 @@ std::vector<ui::menu_item> mame_ui_manager::slider_init(running_machine &machine
 			m_sliders.push_back(slider_alloc(SLIDER_ID_OVERLAY_XOFFSET + slider_index, str.c_str(), 500, (defyscale == 0) ? 1000 : defyscale, 1500, 2, param));
 			str = string_format(_("Laserdisc '%1$s' Vert Position"), laserdisc.tag());
 			m_sliders.push_back(slider_alloc(SLIDER_ID_OVERLAY_YOFFSET + slider_index, str.c_str(), -500, defyoffset, 500, 2, param));
+			str = string_format(_("Laserdisc '%1$s' OFFSET FIX"), laserdisc.tag());//to Fix Offset
+			m_sliders.push_back(slider_alloc(SLIDER_ID_OVERLAY_AOFFSET + slider_index, str.c_str(), -500, defaoffset, 500, 2, param));//to Fix Offset
 			slider_index++;
 		}
 	}
@@ -1553,6 +1563,8 @@ int32_t mame_ui_manager::slider_changed(running_machine &machine, void *arg, int
 			return slider_xoffset(machine, arg, id, str, newval);
 	else if (id >= SLIDER_ID_YOFFSET && id <= SLIDER_ID_YOFFSET_LAST)
 			return slider_yoffset(machine, arg, id, str, newval);
+	else if (id >= SLIDER_ID_AOFFSET && id <= SLIDER_ID_AOFFSET_LAST) //to Fix Offset
+			return slider_aoffset(machine, arg, id, str, newval); //to Fix Offset
 	else if (id >= SLIDER_ID_OVERLAY_XSCALE && id <= SLIDER_ID_OVERLAY_XSCALE_LAST)
 			return slider_overxscale(machine, arg, id, str, newval);
 	else if (id >= SLIDER_ID_OVERLAY_YSCALE && id <= SLIDER_ID_OVERLAY_YSCALE_LAST)
@@ -1561,6 +1573,8 @@ int32_t mame_ui_manager::slider_changed(running_machine &machine, void *arg, int
 			return slider_overxoffset(machine, arg, id, str, newval);
 	else if (id >= SLIDER_ID_OVERLAY_YOFFSET && id <= SLIDER_ID_OVERLAY_YOFFSET_LAST)
 			return slider_overyoffset(machine, arg, id, str, newval);
+	else if (id >= SLIDER_ID_OVERLAY_AOFFSET && id <= SLIDER_ID_OVERLAY_AOFFSET_LAST)//to Fix Offset
+			return slider_overaoffset(machine, arg, id, str, newval);//to Fix Offset
 	else if (id >= SLIDER_ID_FLICKER && id <= SLIDER_ID_FLICKER_LAST)
 			return slider_flicker(machine, arg, id, str, newval);
 	else if (id >= SLIDER_ID_BEAM_WIDTH_MIN && id <= SLIDER_ID_BEAM_WIDTH_MIN_LAST)
@@ -1846,6 +1860,36 @@ int32_t mame_ui_manager::slider_yoffset(running_machine &machine, void *arg, int
 	return floor(settings.m_yoffset * 1000.0f + 0.5f);
 }
 
+//
+//-------------------------------------------------
+//  slider_aoffset - Offset Fix
+//  slider callback
+//-------------------------------------------------
+
+float mame_ui_manager::slider_aoffset(running_machine &machine, void *arg, int id, std::string *str, int32_t newval)
+{
+	screen_device *screen = reinterpret_cast<screen_device *>(arg);
+	render_container::user_settings settings;
+	screen->container().get_user_settings(settings);
+	if (newval != SLIDER_NOCHANGE)
+	{
+		settings.m_aoffset = (float)newval * 0.001;
+		screen->container().set_user_settings(settings);
+	}
+	if (str)
+		*str = string_format(_("%1$.3f"), settings.m_aoffset);
+	global = settings.m_aoffset;
+	return floor(settings.m_aoffset * 1000.0f + 0.5f);
+}
+
+u32 mas3507d_device::get_frame_count() {
+	
+	float offset_seconds = global;
+	s32 count = total_frame_count - buffered_frame_count + round(current_rate * offset_seconds);
+
+return (count > 0) ? static_cast<u32>(count) : 0;
+}
+
 
 //-------------------------------------------------
 //  slider_overxscale - screen horizontal scale slider
@@ -1932,6 +1976,27 @@ int32_t mame_ui_manager::slider_overyoffset(running_machine &machine, void *arg,
 	if (str)
 		*str = string_format(_("%1$.3f"), settings.m_overposy);
 	return floor(settings.m_overposy * 1000.0f + 0.5f);
+}
+
+//-------------------------------------------------
+//  slider_overaoffset - to Fix Offset
+//  slider callback
+//-------------------------------------------------
+
+float mame_ui_manager::slider_overaoffset(running_machine &machine, void *arg, int id, std::string *str, int32_t newval)
+{
+	laserdisc_device *laserdisc = (laserdisc_device *)arg;
+	laserdisc_overlay_config settings;
+	float valuee = 1.0;
+	laserdisc->get_overlay_config(settings);
+	if (newval != SLIDER_NOCHANGE)
+	{
+		valuee = (float)newval * 0.001;
+		laserdisc->set_overlay_config(settings);
+	}
+	if (str)
+		*str = string_format(_("%1$.3f"), valuee);
+	return valuee * 1000.0 + 0.5;
 }
 
 
