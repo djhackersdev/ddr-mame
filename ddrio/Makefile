@@ -47,7 +47,7 @@ $(DIST_PACKAGE_DDRIO): \
 	$(V)zip -j $@ $^
 
 $(BIN_DDRIO_DEBUG): $(SOURCE_DDRIO_DEBUG)
-	$(CC) -shared -Wl,-soname,$@ -o $@ -fPIC -I"./src" $<
+	$(CC) -shared -Wl,-soname,$@ -o $@ -fPIC -I"./src" $^
 
 $(BIN_DDRIO_PIUIO_ITG): $(SOURCE_DDRIO_PIUIO_ITG)
-	$(CC) -shared -Wl,-soname,$@ -o $@ -fPIC -I"./src" -lusb-1.0 $<
+	$(CC) -shared -Wl,-soname,$@ -o $@ -fPIC -I"./src" -lusb-1.0 $^
