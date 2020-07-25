@@ -96,7 +96,7 @@ void* piuio_device_usb_open(uint16_t vid, uint16_t pid, uint16_t config, uint16_
         libusb_close(dev);
         libusb_exit(ctx);
 
-        printf("ERROR: (%04X:%04X) Setting configuration failed\n", vid, pid,
+        printf("ERROR: (%04X:%04X) Setting configuration failed: %s\n", vid, pid,
             libusb_error_name(ret));
 		return NULL;
     }
