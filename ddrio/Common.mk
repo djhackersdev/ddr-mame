@@ -9,7 +9,6 @@ BUILD_DOCKER_DIR ?= $(BUILD_DIR)/docker
 CC ?= gcc
 
 gitrev := $(shell git rev-parse HEAD)
-libcver := $(shell ldd --version | head -n 1)
 
 DIST_PACKAGE_DDRIO := $(BUILD_DIR)/ddrio.zip
 
