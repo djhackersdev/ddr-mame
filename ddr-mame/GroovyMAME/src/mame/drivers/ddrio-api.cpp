@@ -45,24 +45,22 @@ bool ddrio_api_load(const char* path, struct ddrio_api* api)
         handle, "ddrio_open");
     api->close = (ddrio_close_t) _ddrio_api_lib_get_func_addr_handle(
         handle, "ddrio_close");
-    api->update = (ddrio_update_t) _ddrio_api_lib_get_func_addr_handle(
-        handle, "ddrio_update");
+    api->read_input = (ddrio_read_input_t) _ddrio_api_lib_get_func_addr_handle(
+        handle, "ddrio_read_input");
+    api->write_output = (ddrio_write_output_t) _ddrio_api_lib_get_func_addr_handle(
+        handle, "ddrio_write_output");
     api->get_pad_input = (ddrio_get_pad_input_t) _ddrio_api_lib_get_func_addr_handle(
         handle, "ddrio_get_pad_input");
     api->get_button_input = (ddrio_get_button_input_t) _ddrio_api_lib_get_func_addr_handle(
         handle, "ddrio_get_button_input");
     api->get_sys_input = (ddrio_get_sys_input_t) _ddrio_api_lib_get_func_addr_handle(
         handle, "ddrio_get_sys_input");
-    api->get_pad_output = (ddrio_get_pad_output_t) _ddrio_api_lib_get_func_addr_handle(
-        handle, "ddrio_get_pad_output");
+    api->set_pad_panel_sensor = (ddrio_set_pad_panel_sensor_t) _ddrio_api_lib_get_func_addr_handle(
+        handle, "ddrio_set_pad_panel_sensor");
     api->set_pad_output = (ddrio_set_pad_output_t) _ddrio_api_lib_get_func_addr_handle(
         handle, "ddrio_set_pad_output");
-    api->get_button_output = (ddrio_get_button_output_t) _ddrio_api_lib_get_func_addr_handle(
-        handle, "ddrio_get_button_output");
     api->set_button_output = (ddrio_set_button_output_t) _ddrio_api_lib_get_func_addr_handle(
         handle, "ddrio_set_button_output");
-    api->get_cabinet_output = (ddrio_get_cabinet_output_t) _ddrio_api_lib_get_func_addr_handle(
-        handle, "ddrio_get_cabinet_output");
     api->set_cabinet_output = (ddrio_set_cabinet_output_t) _ddrio_api_lib_get_func_addr_handle(
         handle, "ddrio_set_cabinet_output");
 
