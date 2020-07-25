@@ -91,8 +91,8 @@ static void _copy_inputs()
     }
 
     /* Sys */
-    _sys_input.test = _in_buffer[1] & (1 << 1);
-    _sys_input.service = _in_buffer[1] & (1 << 6);
+    _sys_input.test = _in_buffer[1] & (1 << 6);
+    _sys_input.service = _in_buffer[1] & (1 << 1);
     _sys_input.clear = _in_buffer[1] & (1 << 7);
     _sys_input.coin = _in_buffer[1] & (1 << 2);
 
