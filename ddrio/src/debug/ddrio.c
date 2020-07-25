@@ -32,7 +32,7 @@ bool ddrio_close()
     return true;
 }
 
-bool ddrio_update()
+bool ddrio_read_input()
 {
     memset(&_ddr_pad_input[DDRIO_PLAYER_1], 0 , sizeof(struct ddrio_pad_input));
     memset(&_ddr_pad_input[DDRIO_PLAYER_2], 0 , sizeof(struct ddrio_pad_input));
@@ -74,9 +74,14 @@ bool ddrio_update()
             &_ddr_sys_input.coin2);
     }
 
+    return true;
+}
+
+bool ddrio_write_output()
+{
     // TODO cabinet output if not 0
 
-    return true;
+    return true;  
 }
 
 void ddrio_get_pad_input(enum ddrio_player player, struct ddrio_pad_input* input)
@@ -94,9 +99,9 @@ void ddrio_get_sys_input(struct ddrio_sys_input* input)
     memcpy(input, &_ddr_sys_input, sizeof(struct ddrio_sys_input));
 }
 
-void ddrio_get_pad_output(enum ddrio_player player, struct ddrio_pad_output* output)
+void ddrio_set_pad_panel_sensor(enum ddrio_player player, enum ddrio_panel_sensor sensor)
 {
-    memcpy(output, &_ddr_pad_output[player], sizeof(struct ddrio_pad_output));
+    // empty
 }
 
 void ddrio_set_pad_output(enum ddrio_player player, const struct ddrio_pad_output* output)
@@ -104,19 +109,9 @@ void ddrio_set_pad_output(enum ddrio_player player, const struct ddrio_pad_outpu
     memcpy(&_ddr_pad_output[player], output, sizeof(struct ddrio_pad_output));
 }
 
-void ddrio_get_button_output(enum ddrio_player player, struct ddrio_button_output* output)
-{
-    memcpy(output, &_ddr_button_output[player], sizeof(struct ddrio_button_output));
-}
-
 void ddrio_set_button_output(enum ddrio_player player, const struct ddrio_button_output* output)
 {
     memcpy(&_ddr_button_output[player], output, sizeof(struct ddrio_button_output));
-}
-
-void ddrio_get_cabinet_output(struct ddrio_cabinet_output* output)
-{
-    memcpy(output, &_ddr_cabinet_output, sizeof(struct ddrio_cabinet_output));
 }
 
 void ddrio_set_cabinet_output(const struct ddrio_cabinet_output* output)
