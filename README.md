@@ -26,6 +26,7 @@ binary size.
 * DDRIO interface for supporting any type of IO board, e.g. piuio-itg, minimaid...
 * Native support of DDRIO interface in 
 [ksys573 driver](ddr-mame/GroovyMame/src/mame/drivers/ksys573.cpp)
+* Joystick and keyboard still works for home setups
 
 ## Hardware requirements
 Anything that runs system 573 emulation well, I guess? I tested this on some 7 year old low spec
@@ -47,10 +48,14 @@ Refer to the [readme](ddr-mame/README.md).
 ## DDRIO
 Refer to the [readme](ddrio/README.md).
 
+## General game documentation
+* [Unlock codes](doc/ddr-unlocks.md)
+
 ## Issue reporting
 Use the templates when opening issues or merge requests. They save time, avoid a lot of back and
 forth, and assist you in providing fundamental information we are always asking for.
 
 ## License
-Source code license is the Unlicense; you are permitted to do with this as thou wilt. For details,
-please refer to the [LICENSE file](LICENSE) included with the source code.
+For the MAME source code used, see the license there. As for everything that's contributed in the
+scope of this project, the Unlicense applies; you are permitted to do with this as thou wilt. For
+details, please refer to the [LICENSE file](LICENSE) included with the source code.

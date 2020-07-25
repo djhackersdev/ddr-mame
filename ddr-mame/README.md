@@ -279,6 +279,16 @@ Reload the udev rules without rebooting:
 udevadm control --reload-rules && udevadm trigger
 ```
 
+### Screen flickering on resolution change when starting games from MAME menu
+This seems to depend on what kind of resolution you want to run the games on. When you launch MAME
+and select the game from the OSD, the `switchres` module changes the resolution before the game is
+started. This might cause the screen to flicker after the resolution is changed when the game
+starts. This also happens if the resolution of the OSD menu is identical to the game resolution.
+
+This issue is a pure software issue as it can be reproduced on different hardware and screen
+resolutions. This can be mitigated by starting games directly using command line arguments avoiding
+MAME's OSD.
+
 ## GroovyMAME strip down process, notes
 * The build system uses a bunch of lua scripts to determine what to build. These scripts are located
 in the `scripts` sub-folder. Relevant folders for stripping: `scripts/target/mame`, `scripts/src`
