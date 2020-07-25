@@ -475,7 +475,7 @@ public:
 	void init_hyperbbc();
 	void init_drmn();
 
-	DECLARE_CUSTOM_INPUT_MEMBER( ddrio_inputs_read );
+	DECLARE_CUSTOM_INPUT_MEMBER( ddrio_inputs_pad_read );
 	DECLARE_READ_LINE_MEMBER( ddrio_inputs_sys_service_read );
 	DECLARE_READ_LINE_MEMBER( ddrio_inputs_sys_test_read );
 	DECLARE_READ_LINE_MEMBER( ddrio_inputs_sys_coin1_read );
@@ -1313,7 +1313,7 @@ void ksys573_state::ddrio_driver_shutdown()
 	m_ddrio_driver.shutdown();
 }
 
-CUSTOM_INPUT_MEMBER( ksys573_state::ddrio_inputs_read )
+CUSTOM_INPUT_MEMBER( ksys573_state::ddrio_inputs_pad_read )
 {
 	u32 ddrio_stage;
 	u32 ddrio_button;
@@ -3127,7 +3127,7 @@ static INPUT_PORTS_START( ddr )
 	PORT_BIT( 0x02000000, IP_ACTIVE_LOW, IPT_CUSTOM ) PORT_READ_LINE_MEMBER( ksys573_state, ddrio_inputs_sys_coin2_read )
 
 	PORT_MODIFY( "IN2" )
-	PORT_BIT( 0x0000ffff, IP_ACTIVE_HIGH, IPT_CUSTOM ) PORT_CUSTOM_MEMBER( ksys573_state, ddrio_inputs_read )
+	PORT_BIT( 0x0000ffff, IP_ACTIVE_HIGH, IPT_CUSTOM ) PORT_CUSTOM_MEMBER( ksys573_state, ddrio_inputs_pad_read )
 
 	PORT_MODIFY( "IN3" )
 	PORT_BIT( 0x00000400, IP_ACTIVE_LOW, IPT_CUSTOM ) PORT_READ_LINE_MEMBER( ksys573_state, ddrio_inputs_sys_test_read )
