@@ -403,7 +403,6 @@ public:
 		m_stage(*this, "STAGE"),
 		m_ddr_buttons(*this, "DDRBUTTONS"),
 		m_sys(*this, "SYS"),
-		m_sys2(*this, "SYS2"),
 		m_gunx(*this, "GUNX"),
 		m_sensor(*this, "SENSOR"),
 		m_encoder(*this, "ENCODER"),
@@ -477,8 +476,10 @@ public:
 	void init_drmn();
 
 	DECLARE_CUSTOM_INPUT_MEMBER( ddrio_inputs_read );
-	// DECLARE_CUSTOM_INPUT_MEMBER( ddrio_inputs_sys_read );
-	// DECLARE_CUSTOM_INPUT_MEMBER( ddrio_inputs_sys2_read );
+	DECLARE_READ_LINE_MEMBER( ddrio_inputs_sys_service_read );
+	DECLARE_READ_LINE_MEMBER( ddrio_inputs_sys_test_read );
+	DECLARE_READ_LINE_MEMBER( ddrio_inputs_sys_coin1_read );
+	DECLARE_READ_LINE_MEMBER( ddrio_inputs_sys_coin2_read );
 
 	DECLARE_CUSTOM_INPUT_MEMBER( gn845pwbb_read );
 	DECLARE_READ_LINE_MEMBER( gunmania_tank_shutter_sensor );
@@ -645,7 +646,6 @@ private:
 	optional_ioport m_stage;
 	optional_ioport m_ddr_buttons;
 	optional_ioport m_sys;
-	optional_ioport m_sys2;
 	optional_ioport m_gunx;
 	optional_ioport m_sensor;
 	optional_ioport m_encoder;
@@ -1337,67 +1337,49 @@ CUSTOM_INPUT_MEMBER( ksys573_state::ddrio_inputs_read )
 	return stage_merged | button_merged;
 }
 
-// CUSTOM_INPUT_MEMBER( ksys573_state::ddrio_inputs_sys_read )
-// {
-// 	u32 ddrio_sys;
+READ_LINE_MEMBER ( ksys573_state::ddrio_inputs_sys_service_read )
+{
+	const struct ddrio_driver::input_state* input_state = m_ddrio_driver.input_state_front();
 
-// 	struct ddrio_sys_input sys_input;
+	bool service = (m_sys->read() & 0x01) ^ 0x01;
 
-// 	ddrio_sys = 0;
+	bool merged = input_state->cabinet_operator.service || service;
 
-// 	if (ddrio_api.initialized) {
-// 		ddrio_api.get_sys_input(&sys_input);
+	return merged ? 1 : 0;
+}
 
-// 		if (sys_input.service) {
-// 			ddrio_sys |= (1 << 28);
-// 		}
+READ_LINE_MEMBER ( ksys573_state::ddrio_inputs_sys_test_read )
+{
+	const struct ddrio_driver::input_state* input_state = m_ddrio_driver.input_state_front();
 
-// 		if (sys_input.coin1) {
-// 			ddrio_sys |= (1 << 24);
-// 		}
+	bool test = (m_sys->read() & 0x02) ^ 0x02;
 
-// 		if (sys_input.coin2) {
-// 			ddrio_sys |= (1 << 25);
-// 		}
-// 	}
+	bool merged = input_state->cabinet_operator.test || test;
 
-// 	u32 sys = (m_sys->read() & 0x13000000) ^ 0x13000000;
+	return merged ? 1 : 0;
+}
 
-// 	u32 sys_merged = ddrio_sys | sys;
+READ_LINE_MEMBER ( ksys573_state::ddrio_inputs_sys_coin1_read )
+{
+	const struct ddrio_driver::input_state* input_state = m_ddrio_driver.input_state_front();
 
-// 	sys_merged = sys_merged ^ 0x13000000;
+	bool coin1 = (m_sys->read() & 0x04) ^ 0x04;
 
-// 	printf("1 %X %X %X\n", ddrio_sys, sys, sys_merged);
+	bool merged = input_state->cabinet_operator.coin1 || coin1;
 
-// 	return sys_merged;
-// }
+	return merged ? 1 : 0;
+}
 
-// CUSTOM_INPUT_MEMBER( ksys573_state::ddrio_inputs_sys2_read )
-// {
-// 	u32 ddrio_sys;
+READ_LINE_MEMBER ( ksys573_state::ddrio_inputs_sys_coin2_read )
+{
+	const struct ddrio_driver::input_state* input_state = m_ddrio_driver.input_state_front();
 
-// 	struct ddrio_sys_input sys_input;
+	bool coin2 = (m_sys->read() & 0x08) ^ 0x08;
 
-// 	ddrio_sys = 0;
+	bool merged = input_state->cabinet_operator.coin2 || coin2;
 
-// 	if (ddrio_api.initialized) {
-// 		ddrio_api.get_sys_input(&sys_input);
-
-// 		if (sys_input.test) {
-// 			ddrio_sys |= (1 << 10);
-// 		}
-// 	}
-
-// 	u32 sys = (m_sys2->read() & 0x00000400) ^ 0x00000400;
-
-// 	u32 sys_merged = ddrio_sys | sys;
-
-// 	sys_merged = sys_merged ^ 0x00000400;
-
-// 	printf("2 %X %X %X\n", ddrio_sys, sys, sys_merged);
-
-// 	return sys_merged;
-// }
+	return merged ? 1 : 0;
+}
 
 void ksys573_state::ddrio_driver_read_inputs(u32* stage, u32* button)
 {
@@ -3042,7 +3024,7 @@ static INPUT_PORTS_START( konami573 )
 	PORT_BIT( 0x02000000, IP_ACTIVE_LOW, IPT_COIN2 )
 	PORT_BIT( 0x04000000, IP_ACTIVE_LOW, IPT_CUSTOM ) PORT_READ_LINE_DEVICE_MEMBER( "pccard1", pccard_slot_device, read_line_inserted )
 	PORT_BIT( 0x08000000, IP_ACTIVE_LOW, IPT_CUSTOM ) PORT_READ_LINE_DEVICE_MEMBER( "pccard2", pccard_slot_device, read_line_inserted )
-	PORT_BIT( 0x10000000, IP_ACTIVE_LOW, IPT_SERVICE1 )
+	PORT_BIT( 0x10000000, IP_ACTIVE_LOW, IPT_SERVICE )
 //  PORT_BIT( 0x20000000, IP_ACTIVE_LOW, IPT_UNKNOWN )
 //  PORT_BIT( 0x40000000, IP_ACTIVE_LOW, IPT_UNKNOWN )
 //  PORT_BIT( 0x80000000, IP_ACTIVE_LOW, IPT_UNKNOWN )
@@ -3137,14 +3119,16 @@ INPUT_PORTS_END
 static INPUT_PORTS_START( ddr )
 	PORT_INCLUDE( konami573 )
 
-	// PORT_MODIFY( "IN1" )
-	// PORT_BIT( 0x13000000, IP_ACTIVE_LOW, IPT_CUSTOM ) PORT_CUSTOM_MEMBER( ksys573_state, ddrio_inputs_sys_read )
+	PORT_MODIFY( "IN1" )
+	PORT_BIT( 0x10000000, IP_ACTIVE_LOW, IPT_CUSTOM ) PORT_READ_LINE_MEMBER( ksys573_state, ddrio_inputs_sys_service_read )
+	PORT_BIT( 0x01000000, IP_ACTIVE_LOW, IPT_CUSTOM ) PORT_READ_LINE_MEMBER( ksys573_state, ddrio_inputs_sys_coin1_read )
+	PORT_BIT( 0x02000000, IP_ACTIVE_LOW, IPT_CUSTOM ) PORT_READ_LINE_MEMBER( ksys573_state, ddrio_inputs_sys_coin2_read )
 
 	PORT_MODIFY( "IN2" )
 	PORT_BIT( 0x0000ffff, IP_ACTIVE_HIGH, IPT_CUSTOM ) PORT_CUSTOM_MEMBER( ksys573_state, ddrio_inputs_read )
 
-	// PORT_MODIFY( "IN3" )
-	// PORT_BIT( 0x00000400, IP_ACTIVE_LOW, IPT_CUSTOM ) PORT_CUSTOM_MEMBER( ksys573_state, ddrio_inputs_sys2_read )
+	PORT_MODIFY( "IN3" )
+	PORT_BIT( 0x00000400, IP_ACTIVE_LOW, IPT_CUSTOM ) PORT_READ_LINE_MEMBER( ksys573_state, ddrio_inputs_sys_test_read )
 
 	PORT_START( "STAGE" )
 	PORT_BIT( 0x00000100, IP_ACTIVE_LOW, IPT_JOYSTICK_LEFT ) PORT_16WAY PORT_PLAYER( 1 )
@@ -3166,13 +3150,11 @@ static INPUT_PORTS_START( ddr )
 	PORT_BIT( 0x00000040, IP_ACTIVE_LOW, IPT_BUTTON3 ) PORT_PLAYER( 2 )
 	PORT_BIT( 0x00000080, IP_ACTIVE_LOW, IPT_START2 ) /* skip init? */
 
-	// PORT_START( "SYS" )
-	// PORT_BIT( 0x01000000, IP_ACTIVE_LOW, IPT_COIN1 )
-	// PORT_BIT( 0x02000000, IP_ACTIVE_LOW, IPT_COIN2 )
-	// PORT_BIT( 0x10000000, IP_ACTIVE_LOW, IPT_SERVICE1 )
-
-	// PORT_START( "SYS2" )
-	// PORT_SERVICE_NO_TOGGLE( 0x00000400, IP_ACTIVE_LOW )
+	PORT_START( "SYS" )
+	PORT_BIT( 0x00000001, IP_ACTIVE_LOW, IPT_SERVICE1 )
+	PORT_BIT( 0x00000002, IP_ACTIVE_LOW, IPT_SERVICE ) // "test" button
+	PORT_BIT( 0x00000004, IP_ACTIVE_LOW, IPT_COIN1 )
+	PORT_BIT( 0x00000008, IP_ACTIVE_LOW, IPT_COIN2 )
 INPUT_PORTS_END
 
 static INPUT_PORTS_START( ddrsolo )
