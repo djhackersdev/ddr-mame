@@ -400,9 +400,9 @@ public:
 		m_out2(*this, "OUT2"),
 		m_cd(*this, "CD"),
 		m_upd4701(*this, "upd4701"),
-		m_stage(*this, "STAGE"),
-		m_ddr_buttons(*this, "DDRBUTTONS"),
-		m_sys(*this, "SYS"),
+		m_ddr_stage_joystick(*this, "ddr_stage_joystick"),
+		m_ddr_buttons_joystick(*this, "ddr_buttons_joystick"),
+		m_ddr_sys_joystick(*this, "ddr_sys_joystick"),
 		m_gunx(*this, "GUNX"),
 		m_sensor(*this, "SENSOR"),
 		m_encoder(*this, "ENCODER"),
@@ -643,9 +643,9 @@ private:
 	required_ioport m_out2;
 	required_ioport m_cd;
 	optional_device<upd4701_device> m_upd4701;
-	optional_ioport m_stage;
-	optional_ioport m_ddr_buttons;
-	optional_ioport m_sys;
+	optional_ioport m_ddr_stage_joystick;
+	optional_ioport m_ddr_buttons_joystick;
+	optional_ioport m_ddr_sys_joystick;
 	optional_ioport m_gunx;
 	optional_ioport m_sensor;
 	optional_ioport m_encoder;
@@ -1176,7 +1176,7 @@ void ksys573_state::gn845pwbb_clk_w( int offset, int data )
 
 CUSTOM_INPUT_MEMBER( ksys573_state::gn845pwbb_read )
 {
-	return m_stage->read() & m_stage_mask;
+	return m_ddr_stage_joystick->read() & m_stage_mask;
 }
 
 void ksys573_state::ddr_output_callback(offs_t offset, uint8_t data)
@@ -1323,8 +1323,8 @@ CUSTOM_INPUT_MEMBER( ksys573_state::ddrio_inputs_read )
 
 	ddrio_driver_read_inputs(&ddrio_stage, &ddrio_button);
 
-	u32 stage = (m_stage->read() & 0x0f0f) ^ 0x0f0f;
-	u32 button = (m_ddr_buttons->read() & 0xf0f0) ^ 0xf0f0;
+	u32 stage = (m_ddr_stage_joystick->read() & 0x0f0f) ^ 0x0f0f;
+	u32 button = (m_ddr_buttons_joystick->read() & 0xf0f0) ^ 0xf0f0;
 
 	u32 stage_merged = ddrio_stage | stage;
 	u32 button_merged = ddrio_button | button;
@@ -1341,7 +1341,7 @@ READ_LINE_MEMBER ( ksys573_state::ddrio_inputs_sys_service_read )
 {
 	const struct ddrio_driver::input_state* input_state = m_ddrio_driver.input_state_front();
 
-	bool service = (m_sys->read() & 0x01) ^ 0x01;
+	bool service = (m_ddr_sys_joystick->read() & 0x01) ^ 0x01;
 
 	bool merged = input_state->cabinet_operator.service || service;
 
@@ -1352,7 +1352,7 @@ READ_LINE_MEMBER ( ksys573_state::ddrio_inputs_sys_test_read )
 {
 	const struct ddrio_driver::input_state* input_state = m_ddrio_driver.input_state_front();
 
-	bool test = (m_sys->read() & 0x02) ^ 0x02;
+	bool test = (m_ddr_sys_joystick->read() & 0x02) ^ 0x02;
 
 	bool merged = input_state->cabinet_operator.test || test;
 
@@ -1363,7 +1363,7 @@ READ_LINE_MEMBER ( ksys573_state::ddrio_inputs_sys_coin1_read )
 {
 	const struct ddrio_driver::input_state* input_state = m_ddrio_driver.input_state_front();
 
-	bool coin1 = (m_sys->read() & 0x04) ^ 0x04;
+	bool coin1 = (m_ddr_sys_joystick->read() & 0x04) ^ 0x04;
 
 	bool merged = input_state->cabinet_operator.coin1 || coin1;
 
@@ -1374,7 +1374,7 @@ READ_LINE_MEMBER ( ksys573_state::ddrio_inputs_sys_coin2_read )
 {
 	const struct ddrio_driver::input_state* input_state = m_ddrio_driver.input_state_front();
 
-	bool coin2 = (m_sys->read() & 0x08) ^ 0x08;
+	bool coin2 = (m_ddr_sys_joystick->read() & 0x08) ^ 0x08;
 
 	bool merged = input_state->cabinet_operator.coin2 || coin2;
 
@@ -3119,6 +3119,8 @@ INPUT_PORTS_END
 static INPUT_PORTS_START( ddr )
 	PORT_INCLUDE( konami573 )
 
+	// Modify the ports to hook custom handlers when reading inputs from them
+
 	PORT_MODIFY( "IN1" )
 	PORT_BIT( 0x10000000, IP_ACTIVE_LOW, IPT_CUSTOM ) PORT_READ_LINE_MEMBER( ksys573_state, ddrio_inputs_sys_service_read )
 	PORT_BIT( 0x01000000, IP_ACTIVE_LOW, IPT_CUSTOM ) PORT_READ_LINE_MEMBER( ksys573_state, ddrio_inputs_sys_coin1_read )
@@ -3130,17 +3132,20 @@ static INPUT_PORTS_START( ddr )
 	PORT_MODIFY( "IN3" )
 	PORT_BIT( 0x00000400, IP_ACTIVE_LOW, IPT_CUSTOM ) PORT_READ_LINE_MEMBER( ksys573_state, ddrio_inputs_sys_test_read )
 
-	PORT_START( "STAGE" )
+	// Port definitions to catch any inputs from the "joystick" backend of MAME (includes keyboard
+	// inputs). These are being read and merged with the DDRIO inputs in custom handlers
+
+	PORT_START( "ddr_stage_joystick" )
 	PORT_BIT( 0x00000100, IP_ACTIVE_LOW, IPT_JOYSTICK_LEFT ) PORT_16WAY PORT_PLAYER( 1 )
-	PORT_BIT( 0x00000200, IP_ACTIVE_LOW, IPT_JOYSTICK_RIGHT ) PORT_16WAY PORT_PLAYER( 1 ) /* multiplexor */
-	PORT_BIT( 0x00000400, IP_ACTIVE_LOW, IPT_JOYSTICK_UP ) PORT_16WAY PORT_PLAYER( 1 )    /* multiplexor */
+	PORT_BIT( 0x00000200, IP_ACTIVE_LOW, IPT_JOYSTICK_RIGHT ) PORT_16WAY PORT_PLAYER( 1 )
+	PORT_BIT( 0x00000400, IP_ACTIVE_LOW, IPT_JOYSTICK_UP ) PORT_16WAY PORT_PLAYER( 1 ) 
 	PORT_BIT( 0x00000800, IP_ACTIVE_LOW, IPT_JOYSTICK_DOWN ) PORT_16WAY PORT_PLAYER( 1 )
 	PORT_BIT( 0x00000001, IP_ACTIVE_LOW, IPT_JOYSTICK_LEFT ) PORT_16WAY PORT_PLAYER( 2 )
-	PORT_BIT( 0x00000002, IP_ACTIVE_LOW, IPT_JOYSTICK_RIGHT ) PORT_16WAY PORT_PLAYER( 2 ) /* multiplexor */
-	PORT_BIT( 0x00000004, IP_ACTIVE_LOW, IPT_JOYSTICK_UP ) PORT_16WAY PORT_PLAYER( 2 )    /* multiplexor */
+	PORT_BIT( 0x00000002, IP_ACTIVE_LOW, IPT_JOYSTICK_RIGHT ) PORT_16WAY PORT_PLAYER( 2 )
+	PORT_BIT( 0x00000004, IP_ACTIVE_LOW, IPT_JOYSTICK_UP ) PORT_16WAY PORT_PLAYER( 2 )
 	PORT_BIT( 0x00000008, IP_ACTIVE_LOW, IPT_JOYSTICK_DOWN ) PORT_16WAY PORT_PLAYER( 2 )
 
-	PORT_START( "DDRBUTTONS" )
+	PORT_START( "ddr_buttons_joystick" )
 	PORT_BIT( 0x00001000, IP_ACTIVE_LOW, IPT_BUTTON1 ) PORT_PLAYER( 1 ) /* skip init? */
 	PORT_BIT( 0x00002000, IP_ACTIVE_LOW, IPT_BUTTON2 ) PORT_PLAYER( 1 )
 	PORT_BIT( 0x00004000, IP_ACTIVE_LOW, IPT_BUTTON3 ) PORT_PLAYER( 1 )
@@ -3150,7 +3155,7 @@ static INPUT_PORTS_START( ddr )
 	PORT_BIT( 0x00000040, IP_ACTIVE_LOW, IPT_BUTTON3 ) PORT_PLAYER( 2 )
 	PORT_BIT( 0x00000080, IP_ACTIVE_LOW, IPT_START2 ) /* skip init? */
 
-	PORT_START( "SYS" )
+	PORT_START( "ddr_sys_joystick" )
 	PORT_BIT( 0x00000001, IP_ACTIVE_LOW, IPT_SERVICE1 )
 	PORT_BIT( 0x00000002, IP_ACTIVE_LOW, IPT_SERVICE ) // "test" button
 	PORT_BIT( 0x00000004, IP_ACTIVE_LOW, IPT_COIN1 )
