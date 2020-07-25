@@ -32,3 +32,6 @@ The [ddrio.h header file](src/ddrio/ddrio.h) is the interface the you have to im
 new sub-folder next to the existing implementations and a `ddrio.c` module that implements the
 interface. Checkout the interface documentation and existing examples for reference. To include
 your implementation in the build process, tweak the [Makefile](Makefile) to include it accordingly.
+
+## Debugging with real hardware
+To make development and debugging comfortable, setup [USB over IP](doc-linux-usbip-debugging.md).
