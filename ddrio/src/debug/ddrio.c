@@ -45,6 +45,8 @@ bool ddrio_read_input()
     FILE* file = fopen("/tmp/ddrio", "r");
 
     if (file) {
+        int values[18];
+
         fseek(file, 0, SEEK_END);
         int size = ftell(file);
         fseek(file, 0, SEEK_SET);
@@ -54,24 +56,43 @@ bool ddrio_read_input()
         fclose(file);
 
         sscanf(buffer, "%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",
-            &_ddr_pad_input[DDRIO_PLAYER_1].left,
-            &_ddr_pad_input[DDRIO_PLAYER_1].down,
-            &_ddr_pad_input[DDRIO_PLAYER_1].up,
-            &_ddr_pad_input[DDRIO_PLAYER_1].right,
-            &_ddr_pad_input[DDRIO_PLAYER_2].left,
-            &_ddr_pad_input[DDRIO_PLAYER_2].down,
-            &_ddr_pad_input[DDRIO_PLAYER_2].up,
-            &_ddr_pad_input[DDRIO_PLAYER_2].right,
-            &_ddr_button_input[DDRIO_PLAYER_1].left,
-            &_ddr_button_input[DDRIO_PLAYER_1].right,
-            &_ddr_button_input[DDRIO_PLAYER_1].start,
-            &_ddr_button_input[DDRIO_PLAYER_2].left,
-            &_ddr_button_input[DDRIO_PLAYER_2].right,
-            &_ddr_button_input[DDRIO_PLAYER_2].start,
-            &_ddr_sys_input.test,
-            &_ddr_sys_input.service,
-            &_ddr_sys_input.coin1,
-            &_ddr_sys_input.coin2);
+            &values[0],
+            &values[1],
+            &values[2],
+            &values[3],
+            &values[4],
+            &values[5],
+            &values[6],
+            &values[7],
+            &values[8],
+            &values[9],
+            &values[10],
+            &values[11],
+            &values[12],
+            &values[13],
+            &values[14],
+            &values[15],
+            &values[16],
+            &values[17]);
+
+            _ddr_pad_input[DDRIO_PLAYER_1].left = values[0] > 0;
+            _ddr_pad_input[DDRIO_PLAYER_1].down = values[1] > 0;
+            _ddr_pad_input[DDRIO_PLAYER_1].up = values[2] > 0;
+            _ddr_pad_input[DDRIO_PLAYER_1].right = values[3] > 0;
+            _ddr_pad_input[DDRIO_PLAYER_2].left = values[4] > 0;
+            _ddr_pad_input[DDRIO_PLAYER_2].down = values[5] > 0;
+            _ddr_pad_input[DDRIO_PLAYER_2].up = values[6] > 0;
+            _ddr_pad_input[DDRIO_PLAYER_2].right = values[7] > 0;
+            _ddr_button_input[DDRIO_PLAYER_1].left = values[8] > 0;
+            _ddr_button_input[DDRIO_PLAYER_1].right = values[9] > 0;
+            _ddr_button_input[DDRIO_PLAYER_1].start = values[10] > 0;
+            _ddr_button_input[DDRIO_PLAYER_2].left = values[11] > 0;
+            _ddr_button_input[DDRIO_PLAYER_2].right = values[12] > 0;
+            _ddr_button_input[DDRIO_PLAYER_2].start = values[13] > 0;
+            _ddr_sys_input.test = values[14] > 0;
+            _ddr_sys_input.service = values[15] > 0;
+            _ddr_sys_input.coin1 = values[16] > 0;
+            _ddr_sys_input.coin2 = values[17] > 0;
     }
 
     return true;
