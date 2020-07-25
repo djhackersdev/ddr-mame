@@ -876,6 +876,7 @@ function createProjects_mame_arcade(_target, _subtarget)
 createMAMEProjects(_target, _subtarget, "konami")
 files {
 	MAME_DIR .. "src/mame/drivers/ddrio-api.cpp",
+	MAME_DIR .. "src/mame/drivers/ddrio-driver.cpp",
 	MAME_DIR .. "src/mame/drivers/ksys573.cpp",
 	MAME_DIR .. "src/mame/machine/k573cass.cpp",
 	MAME_DIR .. "src/mame/machine/k573cass.h",
