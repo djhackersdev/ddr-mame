@@ -4,43 +4,35 @@
 #include "ddrio/ddrio.h"
 #include "piuio/itg/piuio-itg.h"
 
+static const enum piuio_itg_sensor_group _ddrio_to_piuio_sensor_group_map[DDRIO_PANEL_SENSOR_NUM] = {
+    PIUIO_ITG_SENSOR_GROUP_LEFT,
+    PIUIO_ITG_SENSOR_GROUP_RIGHT,
+    PIUIO_ITG_SENSOR_GROUP_UP,
+    PIUIO_ITG_SENSOR_GROUP_DOWN
+};
+
 static struct ddrio_pad_input _ddr_pad_input[DDRIO_PLAYER_NUM];
 static struct ddrio_button_input _ddr_button_input[DDRIO_PLAYER_NUM];
 static struct ddrio_sys_input _ddr_sys_input;
 
+static enum ddrio_panel_sensor _ddr_panel_sensor[DDRIO_PLAYER_NUM];
 static struct ddrio_pad_output _ddr_pad_output[DDRIO_PLAYER_NUM];
 static struct ddrio_button_output _ddr_button_output[DDRIO_PLAYER_NUM];
 static struct ddrio_cabinet_output _ddr_cabinet_output;
 
-static void _merge_sensor_states(
-    struct piuio_itg_pad_input* itg_sensor_inputs,
-    struct ddrio_pad_input* ddr_input_out)
-{
-    memset(ddr_input_out, 0, sizeof(struct ddrio_pad_input));
-
-    for (uint8_t i = 0; i < PIUIO_ITG_SENSOR_GROUP_NUM; i++) {
-        ddr_input_out->left = ddr_input_out->left || itg_sensor_inputs[i].left;
-        ddr_input_out->down = ddr_input_out->down || itg_sensor_inputs[i].down;
-        ddr_input_out->up = ddr_input_out->up || itg_sensor_inputs[i].up;
-        ddr_input_out->right = ddr_input_out->right || itg_sensor_inputs[i].right;
-    }
-}
-
 static void _copy_inputs()
 {
-    struct piuio_itg_pad_input _itg_pad_input[PIUIO_ITG_PLAYER_NUM][PIUIO_ITG_SENSOR_GROUP_NUM];
+    struct piuio_itg_pad_input _itg_pad_input[PIUIO_ITG_PLAYER_NUM];
     struct piuio_itg_button_input _itg_button_input[PIUIO_ITG_PLAYER_NUM];
     struct piuio_itg_sys_input _itg_sys_input;
 
     for (uint8_t i = 0; i < DDRIO_PLAYER_NUM; i++) {
-        for (uint8_t j = 0; j < PIUIO_ITG_SENSOR_GROUP_NUM; j++) {
-            piuio_itg_get_input_pad(
-                (enum piuio_itg_player) i, 
-                (enum piuio_itg_sensor_group) j,
-                &_itg_pad_input[i][j]);
-        }
+        piuio_itg_get_input_pad( (enum piuio_itg_player) i, &_itg_pad_input[i]);
 
-        _merge_sensor_states(_itg_pad_input[i], &_ddr_pad_input[i]);
+        _ddr_pad_input[i].left = _itg_pad_input[i].left;
+        _ddr_pad_input[i].down = _itg_pad_input[i].down;
+        _ddr_pad_input[i].up = _itg_pad_input[i].up;
+        _ddr_pad_input[i].right = _itg_pad_input[i].right;
 
         piuio_itg_get_input_button((enum piuio_itg_player) i, &_itg_button_input[i]);
 
@@ -63,6 +55,10 @@ static void _copy_outputs()
     struct piuio_itg_cabinet_output itg_cabinet_output;
 
     for (uint8_t i = 0; i < DDRIO_PLAYER_NUM; i++) {
+        piuio_itg_set_output_pad_sensor_group(
+            (enum piuio_itg_player) i, 
+            _ddrio_to_piuio_sensor_group_map[_ddr_panel_sensor[i]]);
+
         itg_pad_output[i].left = _ddr_pad_output[i].left;
         itg_pad_output[i].down = _ddr_pad_output[i].down;
         itg_pad_output[i].up = _ddr_pad_output[i].up;
@@ -97,14 +93,8 @@ bool ddrio_close()
     return true;
 }
 
-bool ddrio_update()
+bool ddrio_read_input()
 {
-    _copy_outputs();
-
-    if (!piuio_itg_send()) {
-        return false;
-    }
-
     if (!piuio_itg_recv()) {
         return false;
     }
@@ -112,6 +102,13 @@ bool ddrio_update()
     _copy_inputs();
 
     return true;
+}
+
+bool ddrio_write_output()
+{
+    _copy_outputs();
+
+    return piuio_itg_send();
 }
 
 void ddrio_get_pad_input(enum ddrio_player player, struct ddrio_pad_input* input)
@@ -129,9 +126,9 @@ void ddrio_get_sys_input(struct ddrio_sys_input* input)
     memcpy(input, &_ddr_sys_input, sizeof(struct ddrio_sys_input));
 }
 
-void ddrio_get_pad_output(enum ddrio_player player, struct ddrio_pad_output* output)
+void ddrio_set_pad_panel_sensor(enum ddrio_player player, enum ddrio_panel_sensor sensor)
 {
-    memcpy(output, &_ddr_pad_output[player], sizeof(struct ddrio_pad_output));
+    _ddr_panel_sensor[player] = sensor;
 }
 
 void ddrio_set_pad_output(enum ddrio_player player, const struct ddrio_pad_output* output)
@@ -139,19 +136,9 @@ void ddrio_set_pad_output(enum ddrio_player player, const struct ddrio_pad_outpu
     memcpy(&_ddr_pad_output[player], output, sizeof(struct ddrio_pad_output));
 }
 
-void ddrio_get_button_output(enum ddrio_player player, struct ddrio_button_output* output)
-{
-    memcpy(output, &_ddr_button_output[player], sizeof(struct ddrio_button_output));
-}
-
 void ddrio_set_button_output(enum ddrio_player player, const struct ddrio_button_output* output)
 {
     memcpy(&_ddr_button_output[player], output, sizeof(struct ddrio_button_output));
-}
-
-void ddrio_get_cabinet_output(struct ddrio_cabinet_output* output)
-{
-    memcpy(output, &_ddr_cabinet_output, sizeof(struct ddrio_cabinet_output));
 }
 
 void ddrio_set_cabinet_output(const struct ddrio_cabinet_output* output)
