@@ -349,8 +349,7 @@ G: gun mania only, drives air soft gun (this game uses real BB bullet)
 #include "cpu/psx/psx.h"
 #include "bus/ata/ataintf.h"
 #include "bus/ata/cr589.h"
-#include "drivers/ddrio.h"
-#include "drivers/ddrio-api.h"
+#include "drivers/ddrio-driver.h"
 #include "machine/adc083x.h"
 #include "machine/bankdev.h"
 #include "machine/ds2401.h"
@@ -382,6 +381,8 @@ public:
 	ksys573_state( const machine_config &mconfig, device_type type, const char *tag ) :
 		driver_device(mconfig, type, tag),
 		m_pads(*this, "PADS"),
+		// TODO make this configurable
+		m_ddrio_driver(240),
 		m_analog0(*this, "analog0"),
 		m_analog1(*this, "analog1"),
 		m_analog2(*this, "analog2"),
@@ -520,8 +521,10 @@ public:
 	optional_ioport m_pads;
 
 private:
-	void init_ddrio();
-	void ddrio_output_write(offs_t offset, uint8_t data);
+	void ddrio_driver_init();
+	void ddrio_driver_shutdown();
+	void ddrio_driver_read_inputs(u32* stage, u32* button);
+	bool ddrio_driver_output_write(offs_t offset, uint8_t data);
 
 	uint16_t control_r(offs_t offset, uint16_t mem_mask = ~0);
 	void control_w(offs_t offset, uint16_t data, uint16_t mem_mask = ~0);
@@ -569,9 +572,7 @@ private:
 	virtual void machine_start() override { m_lamps.resolve(); }
 	virtual void driver_start() override;
 
-	virtual void driver_reset() override;
-
-	struct ddrio_api ddrio_api;
+	ddrio_driver m_ddrio_driver;
 
 	required_ioport m_analog0;
 	required_ioport m_analog1;
@@ -856,11 +857,6 @@ void ksys573_state::driver_start()
 
 	save_item( NAME( m_n_security_control ) );
 	save_item( NAME( m_control ) );
-}
-
-void ksys573_state::driver_reset()
-{
-	// TODO ddrio lights off and close
 }
 
 MACHINE_RESET_MEMBER( ksys573_state,konami573 )
@@ -1185,8 +1181,22 @@ CUSTOM_INPUT_MEMBER( ksys573_state::gn845pwbb_read )
 
 void ksys573_state::ddr_output_callback(offs_t offset, uint8_t data)
 {
-	if (ddrio_api.initialized) {
-		ddrio_output_write(offset, data);
+	if (ddrio_driver_output_write(offset, data)) {
+		struct ddrio_driver::output_state output_state;
+
+		// Always request all sensores for now. This is the default behaviour during gameplay
+		// anyway. Individual sensores are only requested on the IO test screen which needs to
+		// be supported separately
+		m_ddrio_driver.output_state_front()->pad_panel_sensor[0] = ddrio_driver::PAD_PANEL_SENSOR_ALL;
+		m_ddrio_driver.output_state_front()->pad_panel_sensor[1] = ddrio_driver::PAD_PANEL_SENSOR_ALL;
+		
+		// The output signals provided here are only events and not states. Therefore, take the 
+		// previous state which is still in the front buffer, save it, swap and apply it to the
+		// swapped buffer. Then, the game can apply any changes, e.g. flipping outputs on/off,
+		// correctly.
+		memcpy(&output_state, m_ddrio_driver.output_state_front(), sizeof(struct ddrio_driver::output_state));
+		m_ddrio_driver.output_state_swap();
+		memcpy(m_ddrio_driver.output_state_front(), &output_state, sizeof(struct ddrio_driver::output_state));
 	}
 
 	switch( offset )
@@ -1276,25 +1286,31 @@ void ksys573_state::ddr_output_callback(offs_t offset, uint8_t data)
 
 // ============================================================================
 
-void ksys573_state::init_ddrio()
+void ksys573_state::ddrio_driver_init()
 {
-	printf("Initializing DDRIO...\n");
-
-	memset(&ddrio_api, 0, sizeof(struct ddrio_api));
-
-	// Assuming that the working directory is next to the mame executable
-	if (!ddrio_api_load("./ddrio.so", &ddrio_api)) {
-		printf("ERROR: Loading DDRIO library\n");
-	} else {
-		printf("Initializing DDRIO implementation: %s\n", ddrio_api.ident());
-
-		if (!ddrio_api.open()) {
-			printf("ERROR: Opening DDRIO failed\n");
-			memset(&ddrio_api, 0, sizeof(struct ddrio_api));
-		}
-
-		printf("DDRIO opened\n");
+	if (!m_ddrio_driver.init()) {
+		printf("ERROR: Initalizing ddrio_driver failed\n");
 	}
+
+	// Always request all sensores for now. This is the default behaviour during gameplay
+	// anyway. Individual sensores are only requested on the IO test screen which needs to
+	// be supported separately
+	m_ddrio_driver.output_state_front_panel_sensor_all();
+	m_ddrio_driver.output_state_front_lights_off();
+
+	m_ddrio_driver.output_state_swap();
+}
+
+// TODO hook this to a callback when the driver is shut down
+void ksys573_state::ddrio_driver_shutdown()
+{
+	m_ddrio_driver.output_state_front_lights_off();
+	m_ddrio_driver.output_state_swap();
+
+	// Wait a moment for state to persist
+	std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+	m_ddrio_driver.shutdown();
 }
 
 CUSTOM_INPUT_MEMBER( ksys573_state::ddrio_inputs_read )
@@ -1302,78 +1318,10 @@ CUSTOM_INPUT_MEMBER( ksys573_state::ddrio_inputs_read )
 	u32 ddrio_stage;
 	u32 ddrio_button;
 
-	struct ddrio_pad_input pad_input[DDRIO_PLAYER_NUM];
-	struct ddrio_button_input button_input[DDRIO_PLAYER_NUM];
-
 	ddrio_stage = 0;
 	ddrio_button = 0;
 
-	if (ddrio_api.initialized) {
-		if (ddrio_api.update()) {
-			for (uint8_t i = 0; i < DDRIO_PLAYER_NUM; i++) {
-				ddrio_api.get_pad_input((enum ddrio_player) i, &pad_input[i]);
-				ddrio_api.get_button_input((enum ddrio_player) i, &button_input[i]);
-			}
-
-			if (pad_input[0].left) {
-				ddrio_stage |= (1 << 8);
-			}
-
-			if (pad_input[0].down) {
-				ddrio_stage |= (1 << 11);
-			}
-
-			if (pad_input[0].up) {
-				ddrio_stage |= (1 << 10);
-			}
-
-			if (pad_input[0].right) {
-				ddrio_stage |= (1 << 9);
-			}
-
-			if (pad_input[1].left) {
-				ddrio_stage |= (1 << 0);
-			}
-
-			if (pad_input[1].down) {
-				ddrio_stage |= (1 << 3);
-			}
-
-			if (pad_input[1].up) {
-				ddrio_stage |= (1 << 2);
-			}
-
-			if (pad_input[1].right) {
-				ddrio_stage |= (1 << 1);
-			}
-
-			if (button_input[0].left) {
-				ddrio_button |= (1 << 13);
-			}
-
-			if (button_input[0].right) {
-				ddrio_button |= (1 << 14);
-			}
-
-			if (button_input[0].start) {
-				ddrio_button |= (1 << 15);
-			}
-
-			if (button_input[1].left) {
-				ddrio_button |= (1 << 5);
-			}
-
-			if (button_input[1].right) {
-				ddrio_button |= (1 << 6);
-			}
-
-			if (button_input[1].start) {
-				ddrio_button |= (1 << 7);
-			}
-		} else {
-			printf("ERROR: Updating DDRIO failed\n");
-		}
-	}
+	ddrio_driver_read_inputs(&ddrio_stage, &ddrio_button);
 
 	u32 stage = (m_stage->read() & 0x0f0f) ^ 0x0f0f;
 	u32 button = (m_ddr_buttons->read() & 0xf0f0) ^ 0xf0f0;
@@ -1451,132 +1399,147 @@ CUSTOM_INPUT_MEMBER( ksys573_state::ddrio_inputs_read )
 // 	return sys_merged;
 // }
 
-void ksys573_state::ddrio_output_write(offs_t offset, uint8_t data)
+void ksys573_state::ddrio_driver_read_inputs(u32* stage, u32* button)
 {
-	struct ddrio_pad_output pad_output;
-	struct ddrio_button_output button_output;
-	struct ddrio_cabinet_output cabinet_output;
+	const struct ddrio_driver::input_state* input_state;
 
+	m_ddrio_driver.input_state_swap();
+	input_state = m_ddrio_driver.input_state_front();
+
+	if (input_state->pad[0].left) {
+		*stage |= (1 << 8);
+	}
+
+	if (input_state->pad[0].down) {
+		*stage |= (1 << 11);
+	}
+
+	if (input_state->pad[0].up) {
+		*stage |= (1 << 10);
+	}
+
+	if (input_state->pad[0].right) {
+		*stage |= (1 << 9);
+	}
+
+	if (input_state->pad[1].left) {
+		*stage |= (1 << 0);
+	}
+
+	if (input_state->pad[1].down) {
+		*stage |= (1 << 3);
+	}
+
+	if (input_state->pad[1].up) {
+		*stage |= (1 << 2);
+	}
+
+	if (input_state->pad[1].right) {
+		*stage |= (1 << 1);
+	}
+
+	if (input_state->cabinet_player[0].left) {
+		*button |= (1 << 13);
+	}
+
+	if (input_state->cabinet_player[0].right) {
+		*button |= (1 << 14);
+	}
+
+	if (input_state->cabinet_player[0].start) {
+		*button |= (1 << 15);
+	}
+
+	if (input_state->cabinet_player[1].left) {
+		*button |= (1 << 5);
+	}
+
+	if (input_state->cabinet_player[1].right) {
+		*button |= (1 << 6);
+	}
+
+	if (input_state->cabinet_player[1].start) {
+		*button |= (1 << 7);
+	}
+}
+
+bool ksys573_state::ddrio_driver_output_write(offs_t offset, uint8_t data)
+{
 	switch( offset )
 	{
 	case 0:	
-		ddrio_api.get_pad_output(DDRIO_PLAYER_1, &pad_output);
-		pad_output.up = !data;
-		ddrio_api.set_pad_output(DDRIO_PLAYER_1, &pad_output);
-
-		break;
+		m_ddrio_driver.output_state_front()->pad_light[0].up = !data;
+		return true;
 
 	case 1:
-		ddrio_api.get_pad_output(DDRIO_PLAYER_1, &pad_output);
-		pad_output.left = !data;
-		ddrio_api.set_pad_output(DDRIO_PLAYER_1, &pad_output);
-
-		break;
+		m_ddrio_driver.output_state_front()->pad_light[0].left = !data;
+		return true;
 
 	case 2:
-		ddrio_api.get_pad_output(DDRIO_PLAYER_1, &pad_output);
-		pad_output.right = !data;
-		ddrio_api.set_pad_output(DDRIO_PLAYER_1, &pad_output);
-
-		break;
+		m_ddrio_driver.output_state_front()->pad_light[0].right = !data;
+		return true;
 
 	case 3:
-		ddrio_api.get_pad_output(DDRIO_PLAYER_1, &pad_output);
-		pad_output.down = !data;
-		ddrio_api.set_pad_output(DDRIO_PLAYER_1, &pad_output);
-
-		break;
+		m_ddrio_driver.output_state_front()->pad_light[0].down = !data;
+		return true;
 
 	case 8:
-		ddrio_api.get_pad_output(DDRIO_PLAYER_2, &pad_output);
-		pad_output.up = !data;
-		ddrio_api.set_pad_output(DDRIO_PLAYER_2, &pad_output);
-
-		break;
+		m_ddrio_driver.output_state_front()->pad_light[1].up = !data;
+		return true;
 
 	case 9:
-		ddrio_api.get_pad_output(DDRIO_PLAYER_2, &pad_output);
-		pad_output.left = !data;
-		ddrio_api.set_pad_output(DDRIO_PLAYER_2, &pad_output);
-
-		break;
+		m_ddrio_driver.output_state_front()->pad_light[1].left = !data;
+		return true;
 
 	case 10:
-		ddrio_api.get_pad_output(DDRIO_PLAYER_2, &pad_output);
-		pad_output.right = !data;
-		ddrio_api.set_pad_output(DDRIO_PLAYER_2, &pad_output);
-
-		break;
+		m_ddrio_driver.output_state_front()->pad_light[1].right = !data;
+		return true;
 
 	case 11:
-		ddrio_api.get_pad_output(DDRIO_PLAYER_2, &pad_output);
-		pad_output.down = !data;
-		ddrio_api.set_pad_output(DDRIO_PLAYER_2, &pad_output);
-
-		break;
+		m_ddrio_driver.output_state_front()->pad_light[1].down = !data;
+		return true;
 
 	case 17:
-		ddrio_api.get_button_output(DDRIO_PLAYER_1, &button_output);
-		button_output.left = !data;
-		button_output.right = !data;
-		button_output.start = !data;
-		ddrio_api.set_button_output(DDRIO_PLAYER_1, &button_output);
-
-		break;
+		m_ddrio_driver.output_state_front()->cabinet_player[0].left = !data;
+		m_ddrio_driver.output_state_front()->cabinet_player[0].right = !data;
+		m_ddrio_driver.output_state_front()->cabinet_player[0].start = !data;
+		return true;
 
 	case 18:
-		ddrio_api.get_button_output(DDRIO_PLAYER_2, &button_output);
-		button_output.left = !data;
-		button_output.right = !data;
-		button_output.start = !data;
-		ddrio_api.set_button_output(DDRIO_PLAYER_2, &button_output);
-
-		break;
+		m_ddrio_driver.output_state_front()->cabinet_player[1].left = !data;
+		m_ddrio_driver.output_state_front()->cabinet_player[1].right = !data;
+		m_ddrio_driver.output_state_front()->cabinet_player[1].start = !data;
+		return true;
 
 	case 20:
-		ddrio_api.get_cabinet_output(&cabinet_output);
-		cabinet_output.lamp_r2 = !data;
-		ddrio_api.set_cabinet_output(&cabinet_output);
-
-		break;
+		m_ddrio_driver.output_state_front()->cabinet.lamp_r2 = !data;
+		return true;
 
 	case 21:
-		ddrio_api.get_cabinet_output(&cabinet_output);
-		cabinet_output.lamp_l2 = !data;
-		ddrio_api.set_cabinet_output(&cabinet_output);
-
-		break;
+		m_ddrio_driver.output_state_front()->cabinet.lamp_l2 = !data;
+		return true;
 
 	case 22:
-		ddrio_api.get_cabinet_output(&cabinet_output);
-		cabinet_output.lamp_l1 = !data;
-		ddrio_api.set_cabinet_output(&cabinet_output);
-
-		break;
+		m_ddrio_driver.output_state_front()->cabinet.lamp_l1 = !data;
+		return true;
 
 	case 23:
-		ddrio_api.get_cabinet_output(&cabinet_output);
-		cabinet_output.lamp_r1 = !data;
-		ddrio_api.set_cabinet_output(&cabinet_output);
-
-		break;
+		m_ddrio_driver.output_state_front()->cabinet.lamp_r1 = !data;
+		return true;
 
 	case 28: // digital
 	case 30: // analogue
-		ddrio_api.get_cabinet_output(&cabinet_output);
-		cabinet_output.bass = !data;
-		ddrio_api.set_cabinet_output(&cabinet_output);
-
-		break;
+		m_ddrio_driver.output_state_front()->cabinet.bass = !data;
+		return true;
 
 	default:
-		break;
+		return false;
 	}
 }
 
 void ksys573_state::init_ddr()
 {
-	init_ddrio();
+	ddrio_driver_init();
 
 	m_stage_mask = 0xffffffff;
 	gx700pwfbf_init( &ksys573_state::ddr_output_callback );
@@ -1586,7 +1549,7 @@ void ksys573_state::init_ddr()
 
 void ksys573_state::init_ddr2()
 {
-	init_ddrio();
+	ddrio_driver_init();
 }
 
 // ============================================================================
