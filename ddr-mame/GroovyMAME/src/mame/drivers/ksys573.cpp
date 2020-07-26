@@ -526,6 +526,7 @@ private:
 	void ddrio_driver_shutdown();
 	void ddrio_driver_read_inputs(u32* stage, u32* button);
 	bool ddrio_driver_output_write(offs_t offset, uint8_t data);
+	void ddrio_driver_gameloader_exit(const struct ddrio_driver::input_state* input);
 
 	uint16_t control_r(offs_t offset, uint16_t mem_mask = ~0);
 	void control_w(offs_t offset, uint16_t data, uint16_t mem_mask = ~0);
@@ -1388,6 +1389,8 @@ void ksys573_state::ddrio_driver_read_inputs(u32* stage, u32* button)
 	m_ddrio_driver.input_state_swap();
 	input_state = m_ddrio_driver.input_state_front();
 
+	ddrio_driver_gameloader_exit(input_state);
+
 	if (input_state->pad[0].left) {
 		*stage |= (1 << 8);
 	}
@@ -1516,6 +1519,17 @@ bool ksys573_state::ddrio_driver_output_write(offs_t offset, uint8_t data)
 
 	default:
 		return false;
+	}
+}
+
+void ksys573_state::ddrio_driver_gameloader_exit(const struct ddrio_driver::input_state* input)
+{
+	// TODO make this configurable, switch on/off
+
+	// Allow the user to exit MAME using cabinet operator controls to get back to the gameloader
+	if (input->cabinet_operator.service && input->cabinet_operator.test) {
+		printf("Gameloader exit\n");
+		exit(0);
 	}
 }
 
