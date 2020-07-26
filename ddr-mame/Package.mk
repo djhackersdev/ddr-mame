@@ -8,7 +8,6 @@ PACKAGE_LINUX_ZIP := "ddr-mame-linux.zip"
 
 $(BUILD_PACKAGE_LINUX_DIR):
 	$(V)mkdir -p $@
-	$(V)cp -r $(DIST_DIR)/* $@
 	$(V)cp -r $(GROOVYMAME_DIR)/artwork $@/artwork
 	$(V)cp -r $(GROOVYMAME_DIR)/hash $@/hash
 	$(V)cp -r $(GROOVYMAME_DIR)/language $@/language

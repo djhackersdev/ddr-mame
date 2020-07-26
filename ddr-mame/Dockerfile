@@ -28,7 +28,6 @@ COPY /Common.mk /ddr-mame/Common.mk
 COPY /Makefile /ddr-mame/Makefile
 COPY /Package.mk /ddr-mame/Package.mk
 COPY /ddrio /ddr-mame/ddrio
-COPY /dist /ddr-mame/dist
 COPY /GroovyMAME /ddr-mame/GroovyMAME
 
-RUN make build-in-docker
+RUN make build-in-docker package
