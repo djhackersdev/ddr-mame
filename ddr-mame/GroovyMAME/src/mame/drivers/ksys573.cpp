@@ -1529,7 +1529,7 @@ void ksys573_state::ddrio_driver_gameloader_exit(const struct ddrio_driver::inpu
 	// Allow the user to exit MAME using cabinet operator controls to get back to the gameloader
 	if (input->cabinet_operator.service && input->cabinet_operator.test) {
 		printf("Gameloader exit\n");
-		exit(0);
+		machine().schedule_exit();
 	}
 }
 
