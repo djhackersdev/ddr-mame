@@ -344,10 +344,10 @@ void ddrio_driver::_rate_limit_and_sleep(std::size_t poll_elapsed_time_us)
         std::size_t poll_time_frame_us = (1000 * 1000) / m_poll_rate_hz;
 
         if (poll_elapsed_time_us > poll_time_frame_us) {
-            printf("WARNING: Poll elapsed time (%ld us) > total poll frame time (%ld us) for %d hz poll rate\n",
-                poll_elapsed_time_us,
-                poll_time_frame_us,
-                m_poll_rate_hz);
+            // printf("WARNING: Poll elapsed time (%ld us) > total poll frame time (%ld us) for %d hz poll rate\n",
+            //     poll_elapsed_time_us,
+            //     poll_time_frame_us,
+            //     m_poll_rate_hz);
         } else {
             std::this_thread::sleep_for(
                 std::chrono::microseconds(poll_time_frame_us - poll_elapsed_time_us));

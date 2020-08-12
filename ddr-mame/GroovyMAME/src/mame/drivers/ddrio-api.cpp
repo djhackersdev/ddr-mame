@@ -1,4 +1,4 @@
-#include <dlfcn.h>
+//#include <dlfcn.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -7,10 +7,10 @@
 
 static void* _ddrio_api_lib_load_library(const char* path)
 {
-	void* handle = dlopen(path, RTLD_NOW);
+	void* handle = NULL; //= dlopen(path, RTLD_NOW);
 
 	if (!handle) {
-        printf("ERROR: Failed to open library %s: %s\n", path, dlerror());
+        //printf("ERROR: Failed to open library %s: %s\n", path, dlerror());
     } else {
 		printf("Opened lib %s, handle %p\n", path, handle);
 	}
@@ -20,7 +20,7 @@ static void* _ddrio_api_lib_load_library(const char* path)
 
 static void* _ddrio_api_lib_get_func_addr_handle(void* lib_handle, const char* func_name)
 {
-	void* ret = dlsym(lib_handle, func_name);
+	void* ret = NULL;//dlsym(lib_handle, func_name);
 
     if (ret == NULL) {
         printf("ERROR: Could not find func %s in library %p\n", func_name, lib_handle);
